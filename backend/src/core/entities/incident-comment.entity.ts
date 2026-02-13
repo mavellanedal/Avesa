@@ -16,14 +16,14 @@ import { AppUser } from './app-user.entity';
 export class IncidentComment extends BaseUuidEntity {
   @ManyToOne(() => Incident)
   @JoinColumn({ name: 'incident_id' })
-  incident: Incident;
+  incident!: Incident;
 
   @ManyToOne(() => AppUser)
   @JoinColumn({ name: 'app_user_id' })
-  appUser: AppUser;
+  appUser!: AppUser;
 
   @Column({ type: 'text', nullable: false })
-  text: string;
+  text!: string;
 
   @Column({
     type: 'boolean',
@@ -31,8 +31,8 @@ export class IncidentComment extends BaseUuidEntity {
     nullable: false,
     name: 'is_internal',
   })
-  isInternal: boolean;
+  isInternal!: boolean;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  createdAt: Date;
+  createdAt!: Date;
 }

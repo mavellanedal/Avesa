@@ -6,13 +6,13 @@ import { Property } from './property.entity';
 export class PropertyAddress extends BaseUuidEntity {
   @OneToOne(() => Property)
   @JoinColumn({ name: 'property_id' })
-  property: Property;
+  property!: Property;
 
   @Column({ type: 'varchar', length: 200, nullable: false })
-  street: string;
+  street!: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
-  number: string;
+  number!: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
   floor?: string;
@@ -21,16 +21,16 @@ export class PropertyAddress extends BaseUuidEntity {
   door?: string;
 
   @Column({ type: 'varchar', length: 10, nullable: false, name: 'postal_code' })
-  postalCode: string;
+  postalCode!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
-  city: string;
+  city!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   province?: string;
 
   @Column({ type: 'varchar', length: 100, default: 'España' })
-  country: string;
+  country!: string;
 
   @Column({ type: 'decimal', precision: 9, scale: 6, nullable: true })
   latitude?: number;
