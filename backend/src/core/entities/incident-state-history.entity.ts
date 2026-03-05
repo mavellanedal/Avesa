@@ -14,23 +14,23 @@ import { AppUser } from './app-user.entity';
 export class IncidentStateHistory extends BaseUuidEntity {
   @ManyToOne(() => Incident)
   @JoinColumn({ name: 'incident_id' })
-  incident!: Incident;
+  incident: Incident;
 
   @ManyToOne(() => IncidentState)
   @JoinColumn({ name: 'incident_state_id' })
-  incidentState!: IncidentState;
+  incidentState: IncidentState;
 
   @ManyToOne(() => IncidentAction)
   @JoinColumn({ name: 'action_id' })
-  action!: IncidentAction;
+  action: IncidentAction;
 
   @ManyToOne(() => AppUser)
   @JoinColumn({ name: 'app_user_id' })
-  appUser!: AppUser;
+  appUser: AppUser;
 
   @ManyToOne(() => AppUser)
   @JoinColumn({ name: 'assigned_to_app_user_id' })
-  assignedToAppUser!: AppUser;
+  assignedToAppUser: AppUser;
 
   @Column({
     type: 'timestamp',
@@ -38,7 +38,7 @@ export class IncidentStateHistory extends BaseUuidEntity {
     default: () => 'CURRENT_TIMESTAMP',
     name: 'action_date',
   })
-  actionDate!: Date;
+  actionDate: Date;
 
   @Column({
     type: 'varchar',

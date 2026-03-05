@@ -13,38 +13,38 @@ import {
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  public name: string;
 
   @IsString()
   @IsNotEmpty()
-  surname: string;
+  public surname: string;
 
   @IsString()
   @IsNotEmpty()
-  identificationNumber: string;
+  public identificationNumber: string;
 
   @IsEmail()
-  email: string;
+  public email: string;
 
   @IsOptional()
   @IsString()
-  phone?: string;
+  public phone?: string;
 
   @IsString()
   @IsNotEmpty()
-  username: string;
+  public username: string;
 
   @IsString()
   @MinLength(8)
-  password: string;
+  public password: string;
 
   @IsOptional()
   @IsBoolean()
-  isActive?: boolean;
+  public isActive?: boolean;
 
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
   @IsInt({ each: true })
-  functionalRoleIds?: number[];
+  public functionalRoleIds?: number[];
 }

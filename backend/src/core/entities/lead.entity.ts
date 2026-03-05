@@ -17,14 +17,14 @@ import { AppUser } from './app-user.entity';
 @Index('idx_lead_user', ['currentAssignedAppUser'])
 export class Lead extends BaseUuidEntity {
   @Column({ type: 'varchar', length: 50, nullable: false, unique: true })
-  code!: string;
+  code: string;
 
   @ManyToOne(() => Source)
   @JoinColumn({ name: 'source_id' })
-  source!: Source;
+  source: Source;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
-  name!: string;
+  name: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   surname?: string;
@@ -37,11 +37,11 @@ export class Lead extends BaseUuidEntity {
 
   @ManyToOne(() => LeadState)
   @JoinColumn({ name: 'current_state_id' })
-  currentState!: LeadState;
+  currentState: LeadState;
 
   @ManyToOne(() => AppUser)
   @JoinColumn({ name: 'current_assigned_app_user_id' })
-  currentAssignedAppUser!: AppUser;
+  currentAssignedAppUser: AppUser;
 
   @Column({
     type: 'int',
@@ -93,7 +93,7 @@ export class Lead extends BaseUuidEntity {
     nullable: false,
     name: 'needs_pet_friendly',
   })
-  needsPetFriendly!: boolean;
+  needsPetFriendly: boolean;
 
   @Column({
     type: 'boolean',
@@ -101,8 +101,8 @@ export class Lead extends BaseUuidEntity {
     nullable: false,
     name: 'needs_elevator',
   })
-  needsElevator!: boolean;
+  needsElevator: boolean;
 
   @CreateDateColumn({ type: 'timestamp', nullable: false, name: 'created_at' })
-  createdAt!: Date;
+  createdAt: Date;
 }

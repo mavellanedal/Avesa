@@ -4,10 +4,10 @@ import { BaseUuidEntity } from './base-uuid.entity';
 @Entity('app_user')
 export class AppUser extends BaseUuidEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
-  name!: string;
+  name: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
-  surname!: string;
+  surname: string;
 
   @Column({
     type: 'varchar',
@@ -15,14 +15,14 @@ export class AppUser extends BaseUuidEntity {
     nullable: false,
     name: 'identification_number',
   })
-  identificationNumber!: string;
+  identificationNumber: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
-  phone!: string | null;
+  phone: string | null;
 
   @Column({ type: 'varchar', length: 100, nullable: false, unique: true })
-  email!: string;
+  email: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
-  createdAt!: Date;
+  createdAt: Date;
 }

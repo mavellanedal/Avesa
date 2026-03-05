@@ -11,15 +11,15 @@ import { AppUser } from './app-user.entity';
 export class IncidentAttachment extends BaseUuidEntity {
   @ManyToOne(() => Incident)
   @JoinColumn({ name: 'incident_id' })
-  incident!: Incident;
+  incident: Incident;
 
   @ManyToOne(() => StorageFile)
   @JoinColumn({ name: 'storage_file_id' })
-  storageFile!: StorageFile;
+  storageFile: StorageFile;
 
   @ManyToOne(() => AppUser)
   @JoinColumn({ name: 'uploaded_by_user_id' })
-  uploadedByUser!: AppUser;
+  uploadedByUser: AppUser;
 
   @Column({
     type: 'timestamp',
@@ -27,5 +27,5 @@ export class IncidentAttachment extends BaseUuidEntity {
     nullable: false,
     name: 'uploaded_at',
   })
-  uploadedAt!: Date;
+  uploadedAt: Date;
 }
