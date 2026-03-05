@@ -13,10 +13,10 @@ import { PaymentMethod } from './payment-method.entity';
 @Index('idx_property_owner_payment', ['paymentMethod'])
 export class PropertyOwner extends BaseUuidEntity {
   @Column({ type: 'varchar', length: 200, nullable: false })
-  name!: string;
+  name: string;
 
   @Column({ type: 'varchar', length: 200, nullable: false })
-  surname!: string;
+  surname: string;
 
   @Column({
     type: 'varchar',
@@ -24,7 +24,7 @@ export class PropertyOwner extends BaseUuidEntity {
     nullable: false,
     name: 'identification_number',
   })
-  identificationNumber!: string;
+  identificationNumber: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
   phone?: string;
@@ -33,9 +33,9 @@ export class PropertyOwner extends BaseUuidEntity {
   email?: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
-  createdAt!: Date;
+  createdAt: Date;
 
   @ManyToOne(() => PaymentMethod)
   @JoinColumn({ name: 'payment_method_id' })
-  paymentMethod!: PaymentMethod;
+  paymentMethod: PaymentMethod;
 }

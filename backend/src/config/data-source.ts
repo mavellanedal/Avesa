@@ -1,9 +1,14 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 import { ENTITIES } from '../core/entities';
 
-// Cargar variables de entorno manualmente porque Nest no está corriendo
-dotenv.config();
+dotenv.config({
+  path: path.resolve(
+    __dirname,
+    `../../.env.${process.env.NODE_ENV || 'development'}`,
+  ),
+});
 
 export const AppDataSource = new DataSource({
   type: 'postgres',

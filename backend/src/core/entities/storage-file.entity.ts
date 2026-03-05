@@ -4,16 +4,16 @@ import { BaseUuidEntity } from './base-uuid.entity';
 @Entity('storage_file')
 export class StorageFile extends BaseUuidEntity {
   @Column({ type: 'varchar', length: 50, nullable: false })
-  provider!: string;
+  provider: string;
 
   @Column({ type: 'varchar', length: 500, nullable: false })
-  path!: string;
+  path: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false, name: 'mime_type' })
-  mimeType!: string;
+  mimeType: string;
 
   @Column({ type: 'bigint', nullable: false, name: 'size_bytes' })
-  sizeBytes!: number;
+  sizeBytes: number;
 
   @Column({
     type: 'varchar',
@@ -32,5 +32,5 @@ export class StorageFile extends BaseUuidEntity {
   originalName?: string;
 
   @CreateDateColumn({ type: 'timestamp', nullable: false, name: 'created_at' })
-  createdAt!: Date;
+  createdAt: Date;
 }

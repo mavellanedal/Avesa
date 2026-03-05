@@ -17,16 +17,16 @@ import { AppUser } from './app-user.entity';
 export class PropertyStateHistory extends BaseUuidEntity {
   @ManyToOne(() => Property)
   @JoinColumn({ name: 'property_id' })
-  property!: Property;
+  property: Property;
 
   @ManyToOne(() => PropertyState)
   @JoinColumn({ name: 'property_state_id' })
-  propertyState!: PropertyState;
+  propertyState: PropertyState;
 
   @ManyToOne(() => AppUser)
   @JoinColumn({ name: 'app_user_id' })
-  appUser!: AppUser;
+  appUser: AppUser;
 
   @CreateDateColumn({ type: 'timestamp', nullable: false, name: 'change_date' })
-  changeDate!: Date;
+  changeDate: Date;
 }

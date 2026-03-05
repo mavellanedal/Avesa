@@ -1,6 +1,6 @@
 // backend/src/modules/auth/services/auth.service.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from 'src/modules/internal/users/services/users.service';
+import { UsersService } from 'src/modules/internal/user/services/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
@@ -8,6 +8,18 @@ export interface JwtPayload {
   sub: string;
   username: string;
   roles: string[];
+}
+
+export interface LoginResult {
+  accessToken: string;
+  user: {
+    id: string;
+    name: string;
+    surname: string;
+    identificationNumber: string;
+    email: string;
+    phone: string | null;
+  };
 }
 
 @Injectable()

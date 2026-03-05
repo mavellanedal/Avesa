@@ -20,15 +20,15 @@ import { PropertyAddress } from './property-address.entity';
 export class Property extends BaseUuidEntity {
   @ManyToOne(() => PropertyOwner)
   @JoinColumn({ name: 'owner_id' })
-  owner!: PropertyOwner;
+  owner: PropertyOwner;
 
   @ManyToOne(() => PropertyType)
   @JoinColumn({ name: 'type_id' })
-  type!: PropertyType;
+  type: PropertyType;
 
   @ManyToOne(() => PropertyState)
   @JoinColumn({ name: 'current_state_id' })
-  currentState!: PropertyState;
+  currentState: PropertyState;
 
   @Column({
     type: 'decimal',
@@ -46,23 +46,23 @@ export class Property extends BaseUuidEntity {
   featuresBathrooms?: number;
 
   @Column({ type: 'boolean', default: false, name: 'features_has_elevator' })
-  featuresHasElevator!: boolean;
+  featuresHasElevator: boolean;
 
   @Column({ type: 'boolean', default: false, name: 'features_has_pool' })
-  featuresHasPool!: boolean;
+  featuresHasPool: boolean;
 
   @Column({ type: 'boolean', default: false, name: 'features_has_parking' })
-  featuresHasParking!: boolean;
+  featuresHasParking: boolean;
 
   @Column({ type: 'boolean', default: false, name: 'features_is_furnished' })
-  featuresIsFurnished!: boolean;
+  featuresIsFurnished: boolean;
 
   @Column({ type: 'int', nullable: true, name: 'features_construction_year' })
   featuresConstructionYear?: number;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
+  createdAt: Date;
 
   @OneToOne(() => PropertyAddress, (address) => address.property)
-  address!: PropertyAddress;
+  address: PropertyAddress;
 }

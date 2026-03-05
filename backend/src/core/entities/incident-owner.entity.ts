@@ -15,18 +15,18 @@ import { Availability } from './availability.entity';
 export class IncidentOwner extends BaseUuidEntity {
   @OneToOne(() => Incident)
   @JoinColumn({ name: 'incident_id' })
-  incident!: Incident;
+  incident: Incident;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
-  name!: string;
+  name: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  email!: string;
+  email: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
-  phone!: string;
+  phone: string;
 
   @ManyToOne(() => Availability)
   @JoinColumn({ name: 'availability_id' })
-  availability!: Availability;
+  availability: Availability;
 }

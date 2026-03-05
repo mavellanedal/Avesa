@@ -15,13 +15,13 @@ import { FunctionalRole } from './functional-role.entity';
 @Index('idx_login_user_app_user', ['appUserId'])
 export class LoginUser extends BaseUuidEntity {
   @Column({ type: 'uuid', nullable: false, name: 'app_user_id' })
-  appUserId!: string;
+  appUserId: string;
 
   @Column({ type: 'varchar', length: 50, nullable: false, unique: true })
-  username!: string;
+  username: string;
 
   @Column({ type: 'varchar', nullable: false })
-  password!: string;
+  password: string;
 
   @Column({
     type: 'boolean',
@@ -29,11 +29,11 @@ export class LoginUser extends BaseUuidEntity {
     nullable: false,
     name: 'is_active',
   })
-  isActive!: boolean;
+  isActive: boolean;
 
   @OneToOne(() => AppUser)
   @JoinColumn({ name: 'app_user_id' })
-  appUser!: AppUser;
+  appUser: AppUser;
 
   @ManyToMany(() => FunctionalRole)
   @JoinTable({
@@ -44,5 +44,5 @@ export class LoginUser extends BaseUuidEntity {
       referencedColumnName: 'id',
     },
   })
-  roles!: FunctionalRole[];
+  roles: FunctionalRole[];
 }
