@@ -23,31 +23,31 @@ import { AppUser } from './app-user.entity';
 export class Incident extends BaseUuidEntity {
   @Generated('increment')
   @Column({ type: 'bigint', unique: true })
-  code!: number;
+  code: number;
 
   @ManyToOne(() => Property)
   @JoinColumn({ name: 'property_id' })
-  property!: Property;
+  property: Property;
 
   @ManyToOne(() => IncidentPriority)
   @JoinColumn({ name: 'priority_id' })
-  priority!: IncidentPriority;
+  priority: IncidentPriority;
 
   @ManyToOne(() => IncidentCategory)
   @JoinColumn({ name: 'category_id' })
-  category!: IncidentCategory;
+  category: IncidentCategory;
 
   @ManyToOne(() => IncidentState)
   @JoinColumn({ name: 'current_state_id' })
-  currentState!: IncidentState;
+  currentState: IncidentState;
 
   @ManyToOne(() => AppUser)
   @JoinColumn({ name: 'current_assigned_app_user_id' })
   currentAssignedAppUser?: AppUser;
 
   @Column({ type: 'timestamp', nullable: false, name: 'reported_at' })
-  reportedAt!: Date;
+  reportedAt: Date;
 
   @CreateDateColumn({ type: 'timestamp', nullable: false, name: 'created_at' })
-  createdAt!: Date;
+  createdAt: Date;
 }

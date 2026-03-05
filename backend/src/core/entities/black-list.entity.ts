@@ -14,14 +14,14 @@ import { BlackListType } from './black-list-type.entity';
 export class BlackList extends BaseUuidEntity {
   @ManyToOne(() => BlackListType)
   @JoinColumn({ name: 'type_id' })
-  type!: BlackListType;
+  type: BlackListType;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
-  value!: string;
+  value: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  reason!: string;
+  reason: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
-  createdAt!: Date;
+  createdAt: Date;
 }

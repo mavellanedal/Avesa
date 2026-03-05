@@ -12,15 +12,15 @@ import { BaseEntity } from './base.entity';
 @Index('idx_incident_category_parent', ['parent'])
 export class IncidentCategory extends BaseEntity {
   @Column({ type: 'varchar', length: 50, unique: true, nullable: false })
-  name!: string;
+  name: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
-  description!: string;
+  description: string;
 
   @ManyToOne(() => IncidentCategory, (cat) => cat.children, { nullable: true })
   @JoinColumn({ name: 'parent_id' })
-  parent!: IncidentCategory | null;
+  parent: IncidentCategory | null;
 
   @OneToMany(() => IncidentCategory, (cat) => cat.parent)
-  children!: IncidentCategory[];
+  children: IncidentCategory[];
 }
