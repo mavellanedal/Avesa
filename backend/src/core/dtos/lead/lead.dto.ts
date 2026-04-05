@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { IsEmail, IsPhoneNumber, IsString } from 'class-validator';
+import { IsDate, IsEmail, IsPhoneNumber, IsString } from 'class-validator';
 import { SourceDto } from '../source/source.dto';
 import { LeadStateHistoryDto } from './lead-state-history.dto';
 
@@ -31,4 +31,8 @@ export class LeadDto {
   @Expose()
   @Type(() => LeadStateHistoryDto)
   public leadStateHistory: LeadStateHistoryDto[];
+
+  @Expose()
+  @IsDate()
+  public date: Date;
 }

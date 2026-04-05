@@ -1,1 +1,91 @@
-<p>dashboard works!</p>
+<div class="w-full flex flex-col gap-6">
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
+    <div class="bg-white border border-[#F3F4F6] rounded-2xl p-5 shadow-sm flex flex-col gap-4 w-full">
+      <div class="flex justify-between items-center w-full">
+        <div class="text-base font-medium text-shade">{{'welcome.daily-caption' | transloco}}</div>
+        <div class="rounded-full bg-[#E6EBF2] text-primary w-12 h-12 flex items-center justify-center shrink-0">
+          <app-icon name="person_add"></app-icon>
+        </div>
+      </div>
+      <div class="flex items-baseline gap-3 border border-[#F3F4F6] rounded-2xl px-5 py-3 bg-[#FAFBFC]">
+        <span class="text-5xl font-bold text-primary tracking-tight">{{ welcomeLeads?.newLeadsToday || 0 }}</span>
+        <span class="text-[15px] font-medium text-shade">{{'welcome.new-today' | transloco}}</span>
+      </div>
+    </div>
+
+    <div class="bg-white border border-[#F3F4F6] rounded-2xl p-5 shadow-sm flex flex-col gap-4 w-full">
+      <div class="flex justify-between items-center w-full">
+        <div class="text-base font-medium text-shade">{{'welcome.oportunities' | transloco}}</div>
+        <div class="rounded-full bg-focus text-white w-12 h-12 flex items-center justify-center shrink-0">
+          <app-icon name="bolt"></app-icon>
+        </div>
+      </div>
+      <div class="flex items-baseline gap-3 border border-[#F3F4F6] rounded-2xl px-5 py-3 bg-[#FAFBFC]">
+        <span class="text-5xl font-bold text-primary tracking-tight">{{ welcomeLeads?.hotLeadsNotSql || 0 }}</span>
+        <span class="text-[15px] font-medium text-shade">{{'welcome.score-biggest-80' | transloco}}</span>
+      </div>
+    </div>
+
+    <div class="bg-white border border-[#F3F4F6] rounded-2xl p-5 shadow-sm flex flex-col gap-4 w-full">
+      <div class="flex justify-between items-center w-full">
+        <div class="text-base font-medium text-shade">{{'welcome.conversion-rate' | transloco}}</div>
+        <div class="rounded-full bg-transparent text-success w-12 h-12 flex items-center justify-center shrink-0">
+          <app-icon name="show_chart"></app-icon>
+        </div>
+      </div>
+      <div class="flex items-baseline gap-3 border border-[#F3F4F6] rounded-2xl px-5 py-3 bg-[#FAFBFC]">
+        <span class="text-5xl font-bold text-primary tracking-tight">{{ welcomeLeads?.conversionRate || 0 }}%</span>
+        <span class="text-[15px] font-medium text-shade">{{'welcome.leads-to-sale' | transloco}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 w-full">
+
+    <div class="xl:col-span-2 bg-white border border-[#F3F4F6] rounded-2xl p-5 shadow-sm flex flex-col gap-4">
+      <div class="flex justify-between items-center w-full">
+        <div class="text-lg font-bold text-primary">Calidad de Demanda</div>
+        <button class="text-sm font-medium text-shade border border-gray-200 rounded-md px-3 py-1 flex items-center gap-2">
+          <app-icon name="calendar_today" customClass="text-[16px]"></app-icon> Último mes
+        </button>
+      </div>
+      <div class="flex-1 bg-gray-50 rounded-xl border border-dashed border-gray-200 flex items-center justify-center text-shade min-h-[250px]">
+        Espacio reservado para tu gráfico
+      </div>
+    </div>
+
+    <div class="xl:col-span-1 bg-white border border-[#F3F4F6] rounded-2xl p-5 shadow-sm flex flex-col h-full">
+
+      <div class="flex justify-between items-center w-full pb-4 border-b border-[#F3F4F6] mb-2">
+        <div class="text-lg font-bold text-primary">Top Leads (IA)</div>
+        <button class="text-sm font-medium text-shade underline hover:text-primary transition-colors">ver todos</button>
+      </div>
+
+      <div class="flex flex-col">
+        @for (lead of welcomeLeads?.topLeads; track lead.id) {
+          <div class="flex items-center gap-3 py-3 border-b border-[#F3F4F6] last:border-0 hover:bg-gray-50 transition-colors rounded-lg px-2 -mx-2">
+
+            <div class="w-10 h-10 rounded-full bg-[#00C4CC] text-white flex items-center justify-center font-bold text-[13px] shrink-0">
+              {{ getInitials(lead.name, lead.surname) }}
+            </div>
+
+            <div class="bg-primary rounded px-2 py-1 flex items-center gap-1 shrink-0 shadow-sm">
+              <app-icon name="star" customClass="text-yellow-400 text-[14px]"></app-icon>
+              <span class="text-white font-bold text-xs">{{ lead.aiScore || 0 }}</span>
+            </div>
+
+            <div class="flex flex-col min-w-0">
+              <span class="text-sm font-semibold text-primary truncate">{{ lead.name }} {{ lead.surname }}</span>
+              <span class="text-xs text-shade truncate">Interesa: {{ lead.preferredZone || 'Consultar' }}</span>
+            </div>
+
+          </div>
+        } @empty {
+          <div class="text-sm text-shade text-center py-6">No hay leads destacados todavía</div>
+        }
+      </div>
+
+    </div>
+  </div>
+</div>

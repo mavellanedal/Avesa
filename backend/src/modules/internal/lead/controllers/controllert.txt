@@ -1,0 +1,358 @@
+import {Body, Controller, Get, HttpCode, HttpStatus, Logger, Post} from "@nestjs/common";
+import { ApiExcludeController } from "@nestjs/swagger";
+import { Roles } from "@modules/auth/decorators/roles.decorator";
+import { ROLES } from "@shared/constants/roles.constant";
+import { AdminAccess } from "@modules/auth/decorators/admin.decorator";
+
+import { LeadService } from "../services/lead.service";
+import { LeadFilterDto } from "@dtos/lead";
+
+@ApiExcludeController()
+@Controller('lead')
+export class LeadController {
+private readonly logger = new Logger(LeadController.name);
+
+constructor(private readonly leadService: LeadService) {}
+
+@Post('/getLeads')
+@Roles(ROLES.LEADS_READ)
+@HttpCode(HttpStatus.OK)
+async getLeads(@Body() leadFilter: LeadFilterDto) {
+return await this.leadService.getLeads(leadFilter);
+}
+
+@Post('/getLeadStateHistory')
+@Roles(ROLES.LEADS_READ)
+@HttpCode(HttpStatus.OK)
+async getLeadStateHistory(@Body() { idLead }) {
+return await this.leadService.getLeadStateHistory(idLead);
+}
+
+@Post('/getLeadSourceInfo')
+@Roles(ROLES.LEADS_READ)
+@HttpCode(HttpStatus.OK)
+async getLeadSourceInfo(@Body() { idLead }) {
+return await this.leadService.getLeadSourceInfo(idLead);
+}
+
+@Post('/deleteLeadsTest')
+@AdminAccess()
+@HttpCode(HttpStatus.OK)
+async deleteLeadsTest() {
+return await this.leadService.deleteLeadsTest();
+}
+
+@Post('/getLeadStates')
+@Roles(ROLES.LEADS_READ)
+@HttpCode(HttpStatus.OK)
+async getLeadStates() {
+return await this.leadService.getLeadStates();
+}
+
+}
+
+lead.repository.ts:
+import {
+Destination, DestinationSaleType,
+Lead,
+LeadSourceInfo,
+LeadState,
+LeadStateHistory,
+Product,
+Source
+} from "@core/entities";
+import {Brackets, DataSource, Like} from "typeorm";
+import {Injectable} from "@nestjs/common";
+import {CustomRepository} from "@shared/repositories/custom-repository";
+import {PlatformSource} from "@core/entities";
+import {LeadStatePlatformSource} from "@core/entities";
+import {LeadDto, LeadFilterDto} from "@dtos/lead";
+import {LeadPriority} from "@core/entities/entities/lead-priority.entity";
+import {GetLeadInfoDto} from "@dtos/external-api/get-lead-info.dto";
+import {LEAD_SYSTEM} from "@shared/constants/lead-system.constant";
+
+@Injectable()
+export class LeadRepository extends CustomRepository<Lead> {
+
+private readonly sortMap = {
+'leadCode': 'lead.leadCode',
+'leadCodeExt': 'lead.leadCodeExt',
+'name': 'lead.name',
+'email': 'lead.email',
+'phone1': 'lead.phone1',
+'inceptionDate': 'lead.inceptionDate',
+'state': 'ls.name',
+'subState': 'lss.name',
+'destination': 'ld.name',
+'source': 'lsrc.name',
+'product': 'lp.name'
+};
+
+constructor(private dataSource: DataSource) {
+super(Lead, dataSource.createEntityManager());
+}
+
+public async getCountLeadByPhone(phone1: string, phone2: string = null): Promise<number> {
+return await this.count({
+where: [
+{ phone1: Like(`%${phone1}%`) },{ phone2: Like(`%${phone1}%`) },
+...(phone2) ? [{ phone1: Like(`%${phone2}%`) },{ phone2: Like(`%${phone2}%`) }]:[],
+]
+});
+}
+
+public async getLeadByPhone(phone1: string, phone2: string = null): Promise<Lead | null> {
+const result = await this.find({
+where: [
+{ phone1: Like(`%${phone1}%`) },{ phone2: Like(`%${phone1}%`) },
+...(phone2) ? [{ phone1: Like(`%${phone2}%`) },{ phone2: Like(`%${phone2}%`) }]:[],
+]
+});
+
+return this.firstOrNull(result);
+}
+
+public getLastLeadByPhone(phone1: string, phone2: string = null, ids: number[] = null, productId: number = null): Promise<Lead | null> {
+const query = this.createQueryBuilder('lead')
+.where(new Brackets(qb => {
+qb.where('lead.phone1 = :phone11', {phone11:phone1})
+.orWhere('lead.phone2 = :phone12', {phone12:phone1})
+.orWhere('lead.phone1 = :phone21', {phone21:phone2})
+.orWhere('lead.phone2 = :phone22', {phone22:phone2})
+}));
+
+if (ids) {
+query.andWhere('lead.id not in (:...ids)', {ids});
+}
+
+if (productId != null) {
+query.andWhere('lead.product.id = :productId', {productId});
+}
+
+query.orderBy('lead.id', 'DESC')
+
+return query.getOne();
+}
+
+public getLeadById(leadId: number) {
+return this.createQueryBuilder('lead')
+.innerJoinAndMapOne('lead.leadSourceInfo',LeadSourceInfo,'lsi','lead.id = lsi.leadId')
+.innerJoinAndMapOne('lead.source', Source, 'ls', 'lead.source.id = ls.id')
+.leftJoinAndMapOne('ls.destinationSaleType', DestinationSaleType, 'lsdst', 'ls.destinationSaleType.id = lsdst.id')
+.leftJoinAndMapOne('ls.leadPriority', LeadPriority, 'lslp', 'ls.leadPriority.id = lslp.id')
+.innerJoinAndMapOne('lead.product', Product, 'lp', 'lead.product.id = lp.id')
+.where('lead.id = :leadId', {leadId})
+.getOne();
+}
+
+public async getLeadsByFilter(leadFilter: LeadFilterDto) {
+const qb = this.createQueryBuilder('lead');
+const query = qb
+.leftJoinAndMapMany('lead.leadStateHistories',LeadStateHistory,'lsh','lead.id = lsh.lead.id and lsh.id = ' +
+qb.subQuery()
+.select('MAX(leadSubMax.id)')
+.from(LeadStateHistory, 'leadSubMax')
+.where('leadSubMax.lead.id = lead.id')
+.getQuery())
+.leftJoinAndMapOne('lsh.state',LeadState,'ls','lsh.state.id = ls.id')
+.leftJoinAndMapOne('lsh.subState',LeadState,'lss','lsh.subState.id = lss.id')
+.leftJoinAndMapOne('lsh.destination',Destination,'ld','lsh.destination.id = ld.id')
+.leftJoinAndMapOne('lead.source', Source, 'lsrc', 'lead.source.id = lsrc.id')
+.leftJoinAndMapOne('lead.product', Product, 'lp', 'lead.product.id = lp.id');
+
+if (leadFilter.leadCode) {
+query.andWhere(new Brackets(qb1 => {
+query.where('lead.leadCode = :leadCode', {leadCode: leadFilter.leadCode})
+.orWhere('lead.leadCodeExt = :leadCodeExt', {leadCodeExt: leadFilter.leadCode})
+}));
+}
+if (leadFilter.name) {
+query.andWhere('lead.name like :name collate Latin1_General_CI_AI', {name: `%${leadFilter.name}%`});
+}
+if (leadFilter.email) {
+query.andWhere('LOWER(lead.email) like :email', {email: `%${leadFilter.email.toLowerCase()}%`});
+}
+if (leadFilter.phone1) {
+query.andWhere('lead.phone1 like :phone1', {phone1: `%${leadFilter.phone1}%`});
+}
+if (leadFilter.startDate) {
+query.andWhere('lead.inceptionDate >= :startDate', {startDate: leadFilter.startDate});
+}
+if (leadFilter.endDate) {
+query.andWhere('lead.inceptionDate <= :endDate', {endDate: leadFilter.endDate});
+}
+if (leadFilter.stateId) {
+query.andWhere('ls.id = :stateId', {stateId: leadFilter.stateId});
+
+if (leadFilter.subStateId) {
+query.andWhere('lss.id = :subStateId', {subStateId: leadFilter.subStateId})
+}
+}
+if (leadFilter.sourceId) {
+query.andWhere('lsrc.id = :sourceId', {sourceId: leadFilter.sourceId});
+}
+if (leadFilter.destinationId) {
+query.andWhere('ld.id = :destinationId', {destinationId: leadFilter.destinationId});
+}
+if (leadFilter.recirculatedIds && leadFilter.recirculatedIds.length) {
+query.andWhere('lead.id IN (:...recirculatedIds)', {recirculatedIds: leadFilter.recirculatedIds});
+}
+if (leadFilter.productId) {
+query.andWhere('lp.id = :productId', {productId: leadFilter.productId});
+}
+
+query.top(leadFilter.maxResult);
+query.orderBy(this.sortMap[leadFilter.sortBy] || 'lead.inceptionDate', leadFilter.orderBy || 'DESC');
+return this.paginateResults(await query.getMany(), leadFilter.first, leadFilter.max, leadFilter.maxResult, true);
+}
+
+public getLastLeadWithSourceCreateDateByPlatformId(platformId: number): Promise<Lead | null> {
+return this.createQueryBuilder('lead')
+.innerJoinAndMapOne('lead.leadSourceInfo',LeadSourceInfo,'lsi','lead.id = lsi.leadId')
+.where('lead.platform.id = :platformId', {platformId})
+.andWhere('lsi.sourceCreateDate is not null')
+.orderBy('lsi.sourceCreateDate', 'DESC')
+.getOne();
+}
+
+public getLeadByPlatformLeadId(platformLeadId: string): Promise<Lead | null> {
+return this.createQueryBuilder('lead')
+.innerJoinAndMapOne('lead.leadSourceInfo',LeadSourceInfo,'lsi','lead.id = lsi.leadId')
+.where('lsi.platformLeadId = :platformLeadId', {platformLeadId})
+.getOne();
+}
+
+public updateLeadCodeExtById(id: number, leadCodeExt: string) {
+return this.update({id}, {leadCodeExt});
+}
+
+public getLeadsToConversionByPlatformId(platformId: number): Promise<Lead[]> {
+return this.createQueryBuilder('lead')
+.innerJoinAndMapOne('lead.platformSource',PlatformSource,'lps','lead.platform.id = lps.platform.id AND lead.source.id = lps.source.id')
+.innerJoinAndMapOne('lead.leadSourceInfo',LeadSourceInfo,'lsi','lead.id = lsi.leadId')
+.innerJoinAndMapMany('lead.leadStateHistories',LeadStateHistory,'lsh','lead.id = lsh.lead.id')
+.innerJoinAndMapOne('lsh.state',LeadState,'lss','lsh.state.id = lss.id')
+.leftJoinAndMapOne('lsh.subState',LeadState,'lsss','lsh.subState.id = lsss.id')
+.leftJoinAndMapMany('lss.leadStatePlatformSources', LeadStatePlatformSource, 'lsps', 'lsps.leadState.id = lss.id AND lsps.platformSource.id = lps.id')
+.leftJoinAndMapMany('lsss.leadStatePlatformSources', LeadStatePlatformSource, 'lssps', 'lssps.leadState.id = lsss.id AND lssps.platformSource.id = lps.id')
+.where('lead.platform.id = :platformId', {platformId})
+.andWhere('lsh.platformNotificationDate is null')
+.andWhere(new Brackets(qb => {
+qb.where('lsps.eventName is not null')
+.orWhere('lssps.eventName is not null')
+}))
+.orderBy('lead.inceptionDate', 'DESC')
+.getMany();
+}
+
+public deleteLeadsTest() {
+return this.createQueryBuilder()
+.delete()
+.where('name like :pattern', {pattern: 'prueba_%'})
+.execute();
+}
+
+public async getLeadInfo(lead: GetLeadInfoDto, sourceQueryLevelId: number | null) {
+const query = this.createQueryBuilder('lead');
+query
+.leftJoinAndMapMany('lead.leadStateHistories', LeadStateHistory, 'lsh', 'lead.id = lsh.lead.id and lsh.id = ' +
+query.subQuery()
+.select('MAX(leadSubMax.id)')
+.from(LeadStateHistory, 'leadSubMax')
+.where('leadSubMax.lead.id = lead.id')
+.getQuery())
+.leftJoinAndMapOne('lsh.state', LeadState, 'ls', 'lsh.state.id = ls.id')
+.leftJoinAndMapOne('lsh.subState', LeadState, 'lss', 'lsh.subState.id = lss.id');
+if (sourceQueryLevelId === null) {
+query.leftJoinAndMapOne('lsh.destination', Destination, 'ld', 'lsh.destination.id = ld.id');
+query.leftJoinAndMapOne('lead.source', Source, 'lsrc', 'lead.source.id = lsrc.id')
+query.leftJoinAndMapOne('lead.product', Product, 'lp', 'lead.product.id = lp.id');
+}
+if (sourceQueryLevelId !== LEAD_SYSTEM.SOURCE.SOURCE_QUERY_LEVEL.CONSULTA_BASE) {
+query.leftJoinAndMapOne('lead.leadSourceInfo', LeadSourceInfo, 'lsi', 'lsi.lead.id = lead.id')
+}
+
+if (sourceQueryLevelId === LEAD_SYSTEM.SOURCE.SOURCE_QUERY_LEVEL.CONSULTA_BASE) {
+query.select([
+'lead.leadCode',
+'lead.inceptionDate',
+'lsh.date', 'lsh.valueDate',
+'ls.name', 'ls.description',
+'lss.name', 'lss.description'
+]);
+}
+else if (sourceQueryLevelId === LEAD_SYSTEM.SOURCE.SOURCE_QUERY_LEVEL.CONSULTA_AMPLIADA) {
+query.select([
+'lead.leadCode',
+'lead.inceptionDate',
+'lead.name', 'lead.email', 'lead.phone1',
+'lsh.date', 'lsh.valueDate',
+'ls.name', 'ls.description',
+'lss.name', 'lss.description',
+'lsi'
+]);
+}
+else {
+query.select('lead')
+.addSelect(['lsh', 'ls', 'lss'])
+.addSelect(['ld'])
+.addSelect(['lsrc'])
+.addSelect(['lsi'])
+.addSelect(['lp']);
+}
+
+if (lead.leadCode) {
+query.andWhere(new Brackets(qb1 => {
+qb1.where('lead.leadCode = :leadCode', { leadCode: lead.leadCode })
+.orWhere('lead.leadCodeExt = :leadCodeExt', { leadCodeExt: lead.leadCode });
+}));
+} else {
+if (lead.email && lead.email !== '') {
+query.andWhere('LOWER(lead.email) = :email', { email: lead.email.toLowerCase() });
+}
+
+if (lead.phone1 && lead.phone1 !== '') {
+query.andWhere('lead.phone1 = :phone1', { phone1: lead.phone1 });
+}
+
+if (lead.startDate) {
+query.andWhere('lead.inceptionDate >= :startDate', { startDate: lead.startDate });
+}
+
+if (lead.endDate) {
+query.andWhere('lead.inceptionDate <= :endDate', { endDate: lead.endDate });
+}
+
+if (lead.productId) {
+query.andWhere('lp.id = :product', { product: lead.productId });
+}
+
+query.andWhere((qb1) => {
+const sub = qb1
+.subQuery()
+.select('1')
+.from(LeadStateHistory, 'dsh')
+.where('dsh.lead.id = lead.id')
+.andWhere('dsh.subState.id = :subState', { subState: LEAD_SYSTEM.LEAD_STATE.SUB_STATES.DUPLICATE })
+.getQuery();
+return `NOT EXISTS ${sub}`;
+});
+}
+
+query
+.orderBy('lead.inceptionDate', 'DESC')
+.addOrderBy('lead.id', 'DESC');
+
+return query.getOne();
+}
+
+public async getSourceIdByLeadCode(leadCode: string): Promise<number | undefined> {
+const result = await this.createQueryBuilder('lead')
+.leftJoin('lead.source', 'source')
+.select(['lead.id', 'source.id'])
+.where('lead.leadCode = :leadCode', { leadCode })
+.getOne();
+return result?.source?.id;
+}
+
+}

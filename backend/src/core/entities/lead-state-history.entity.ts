@@ -6,7 +6,7 @@ import {
   Index,
 } from 'typeorm';
 import { BaseUuidEntity } from './base-uuid.entity';
-import { Lead } from './lead.entity';
+import { Lead } from '@entities';
 import { LeadState } from './lead-state.entity';
 import { AppUser } from './app-user.entity';
 
@@ -22,6 +22,10 @@ export class LeadStateHistory extends BaseUuidEntity {
   @ManyToOne(() => LeadState)
   @JoinColumn({ name: 'lead_state_id' })
   leadState: LeadState;
+
+  @ManyToOne(() => LeadState)
+  @JoinColumn({ name: 'lead_sub_state_id' })
+  leadSubState: LeadState;
 
   @ManyToOne(() => AppUser)
   @JoinColumn({ name: 'app_user_id' })

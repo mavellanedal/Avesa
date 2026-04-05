@@ -2,6 +2,8 @@ import { Component, inject, signal} from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/login/auth.service';
 import { RouterOutlet } from '@angular/router';
+import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
+import { IconComponent } from '../../shared/components/icon.component';
 
 @Component({
   selector: 'app-home',
@@ -9,8 +11,11 @@ import { RouterOutlet } from '@angular/router';
   imports: [
     RouterLink,
     RouterLinkActive,
-    RouterOutlet
-],
+    RouterOutlet,
+    TranslocoPipe,
+    IconComponent
+  ],
+  providers: [provideTranslocoScope('home')],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -21,7 +26,7 @@ export class HomeComponent {
   public isCollapsed = signal(false);
 
   public menuItems = [
-    { label: 'Inicio', icon: 'home', route: 'dashboard' },
+    { label: 'home.home', icon: 'home', route: 'dashboard' },
   ]
 
   logout() {

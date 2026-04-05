@@ -25,6 +25,7 @@ import { IncidentAttachment } from './incident-attachment.entity';
 import { IncidentStateHistory } from './incident-state-history.entity';
 import { BlackListType } from './black-list-type.entity';
 import { BlackList } from './black-list.entity';
+import { Group } from './group.entity';
 
 export const ENTITIES = [
   FunctionalRole,
@@ -54,6 +55,7 @@ export const ENTITIES = [
   IncidentStateHistory,
   BlackListType,
   BlackList,
+  Group,
 ] as const;
 export {
   FunctionalRole,
@@ -83,4 +85,5 @@ export {
   IncidentStateHistory,
   BlackListType,
   BlackList,
+  Group,
 };

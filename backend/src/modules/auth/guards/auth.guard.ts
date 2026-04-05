@@ -8,6 +8,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/auth.decorator';
 import { Request } from 'express';
+import { ClsUtil } from '@shared/utilities/clstUtil';
+import { UserUtil } from '@shared/utilities/userUtil';
+import { JwtPayload } from '../services/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -27,17 +30,31 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    const token = this.extractTokenFromHeader(request);
+    const authorization = request.headers.authorization;
 
-    if (!token) {
-      throw new UnauthorizedException('No token provided');
+    if (
+      !authorization ||
+      typeof authorization !== 'string' ||
+      authorization.trim() === ''
+    ) {
+      throw new UnauthorizedException('Token no proporcionado');
     }
 
+    const token = authorization.replace(/bearer/gim, '').trim();
+
     try {
-      const payload = await this.jwtService.verifyAsync(token);
+      const payload: JwtPayload = await this.jwtService.verifyAsync(token);
+      ClsUtil.set(UserUtil.USER_TOKEN, token);
+      ClsUtil.set(UserUtil.USER_ROLES, payload.roles);
+
       request['user'] = payload;
+      request['idUser'] = payload.sub;
+      request['rolesUser'] = payload.roles;
+      request['groups'] = payload.groups;
+
+      return true;
     } catch {
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new UnauthorizedException('Token no váldio o expirado');
     }
     return true;
   }
