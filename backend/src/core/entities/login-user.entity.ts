@@ -9,7 +9,8 @@ import {
 } from 'typeorm';
 import { BaseUuidEntity } from './base-uuid.entity';
 import { AppUser } from './app-user.entity';
-import { FunctionalRole } from './functional-role.entity';
+import { Source } from './source.entity';
+import { Group } from './group.entity';
 
 @Entity('login_user')
 @Index('idx_login_user_app_user', ['appUserId'])
@@ -35,14 +36,15 @@ export class LoginUser extends BaseUuidEntity {
   @JoinColumn({ name: 'app_user_id' })
   appUser: AppUser;
 
-  @ManyToMany(() => FunctionalRole)
+  @OneToOne(() => Source)
+  @JoinColumn({ name: 'source_id' })
+  source: Source;
+
+  @ManyToMany(() => Group)
   @JoinTable({
-    name: 'login_role',
+    name: 'login_group',
     joinColumn: { name: 'login_user_id', referencedColumnName: 'id' },
-    inverseJoinColumn: {
-      name: 'functional_role_id',
-      referencedColumnName: 'id',
-    },
+    inverseJoinColumn: { name: 'group_id', referencedColumnName: 'id' },
   })
-  roles: FunctionalRole[];
+  groups: Group[];
 }

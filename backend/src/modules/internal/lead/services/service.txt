@@ -1,0 +1,307 @@
+
+
+import {Injectable, InternalServerErrorException, Logger} from "@nestjs/common";
+import {plainToInstance} from "class-transformer";
+import {
+Destination,
+Lead, LeadReferences,
+LeadSourceInfo,
+LeadState,
+LeadStateHistory,
+Platform,
+PlatformSource,
+Source
+} from "@core/entities";
+import {LeadRepository} from "@modules/internal/lead/repositories/lead.repository";
+import {LeadStateHistoryRepository} from "@modules/internal/lead/repositories/lead-state-history.repository";
+import {LEAD_SYSTEM} from "@shared/constants/lead-system.constant";
+import {Util} from "@shared/utilities/util";
+import {nanoid} from "nanoid";
+import {SourceService} from "@modules/internal/source/services/source.service";
+import {LeadSourceInfoRepository} from "@modules/internal/lead/repositories/lead-source-info.repository";
+import {AxiosError, AxiosRequestConfig} from "axios";
+import {firstValueFrom} from "rxjs";
+import {HttpService} from "@nestjs/axios";
+import {InjectMapper} from "automapper-nestjs";
+import {Mapper} from "automapper-core";
+import {LeadAura} from "@core/models";
+import {ResponseDataDto} from "@dtos/common";
+import {LeadDto, LeadFilterDto, LeadStateDto, LeadStateHistoryDto} from "@dtos/lead";
+import {Like} from "typeorm";
+import {LeadStateRepository} from "@modules/internal/lead/repositories/lead-state.repository";
+import {LeadSourceInfoDto} from "@dtos/lead/lead-source-info.dto";
+import {LeadReferencesRepository} from "@modules/internal/lead/repositories/lead-references.repository";
+import {DestinationDto} from "@dtos/destination";
+import {SourceDto} from "@dtos/source";
+import {GetLeadInfoDto} from "@dtos/external-api/get-lead-info.dto";
+
+@Injectable()
+export class LeadService {
+private readonly logger = new Logger(LeadService.name);
+
+constructor(public leadRepository: LeadRepository,
+public leadStateHistoryRepository: LeadStateHistoryRepository,
+public leadSourceInfoRepository: LeadSourceInfoRepository,
+public leadStateRepository: LeadStateRepository,
+public leadReferencesRepository: LeadReferencesRepository,
+private readonly sourceService: SourceService,
+private readonly httpService: HttpService,
+@InjectMapper() private readonly mapper: Mapper,) {
+}
+
+public async getLeads(leadFilter: LeadFilterDto): Promise<ResponseDataDto<LeadDto[]>> {
+let [leads, total] = await this.leadRepository.getLeadsByFilter(leadFilter);
+return new ResponseDataDto(plainToInstance(LeadDto, <Lead[]>leads, {strategy: 'excludeAll'}), <number>total);
+}
+
+public async getLeadStateHistory(idLead: number): Promise<LeadStateHistoryDto[]> {
+const leadStateHistories = await this.leadStateHistoryRepository.getLeadStateHistory(idLead);
+return plainToInstance(LeadStateHistoryDto, <LeadStateHistory[]>leadStateHistories, {strategy: 'excludeAll'});
+}
+
+public async deleteLeadsTest() {
+return Util.transactional(async () => {
+await this.leadStateHistoryRepository.deleteLeadsTest();
+await this.leadSourceInfoRepository.deleteLeadsTest();
+await this.leadRepository.deleteLeadsTest();
+return true;
+}).catch((error) => {
+this.logger.error('Se ha producido un error al eliminar los leads de prueba', error);
+throw new InternalServerErrorException('Se ha producido un error al eliminar los leads de prueba');
+});
+}
+
+public async createLeadStateHistory(newLead: Lead, date: Date, state: number, subState?: number, destination?: number,
+observations?: any) {
+  const newLeadStateHistory: LeadStateHistory = new LeadStateHistory();
+  newLeadStateHistory.lead = newLead;
+  newLeadStateHistory.date = date;
+  newLeadStateHistory.valueDate = date;
+  newLeadStateHistory.state = new LeadState(state);
+  if (subState) {
+    newLeadStateHistory.subState = new LeadState(subState);
+  }
+  if (destination) {
+    newLeadStateHistory.destination = new Destination(destination);
+  }
+  if (observations) {
+    newLeadStateHistory.observations = observations instanceof Object ? JSON.stringify(observations) : observations;
+  }
+  if (newLead.process) {
+    newLeadStateHistory.process = newLead.process;
+  }
+  await this.leadStateHistoryRepository.insert(newLeadStateHistory);
+}
+
+public async createLeadReference(lead: Lead, sourceLead: Lead) {
+const lr: LeadReferences = new LeadReferences();
+lr.lead = lead;
+lr.sourceLead = sourceLead;
+lead.leadReference = lr;
+await this.leadReferencesRepository.insert(lr);
+}
+
+public async getLeadStates(): Promise<LeadStateDto[]> {
+const leadStates= await this.leadStateRepository.getLeadStates();
+return plainToInstance(LeadStateDto, leadStates, {strategy: 'excludeAll'});
+}
+
+/**
+* Create a new lead
+*
+* @param newLead
+* @param platformSource
+*/
+public async createLead(newLead: Lead, platformSource: PlatformSource): Promise<Lead | null> {
+  return Util.transactional(async () => {
+      const leadSourceInfo: LeadSourceInfo = newLead.leadSourceInfo;
+      if (platformSource.businessId) {
+        platformSource = await this.sourceService.platformSourceRepository.getPlatformSourceByBusiness(platformSource.businessId);
+      }
+      const code = nanoid(LEAD_SYSTEM.NANOID_MAX_DIGITS);
+      newLead.leadCode = code;
+      newLead.leadCodeExt = code;
+      newLead.source = platformSource.source;
+      newLead.platform = new Platform(platformSource.platformId);
+      const date = new Date();
+      newLead.inceptionDate = date;
+      newLead.inceptionUtcDate = Util.getDateWithoutTimeZone(date);
+      newLead.id = (await this.leadRepository.insert(newLead)).generatedMaps[0]?.id;
+      leadSourceInfo.lead = newLead;
+
+      if (!leadSourceInfo.sourceCreateDate) {
+        leadSourceInfo.sourceCreateDate = date;
+      }
+      await this.leadSourceInfoRepository.insert(leadSourceInfo);
+
+      await this.createLeadStateHistory(newLead, date, LEAD_SYSTEM.LEAD_STATE.INTERESTED);
+
+      return newLead;
+  }).catch((error) => {
+    this.logger.error('Se ha producido un error al crear el Lead', error);
+    return null;
+  });
+}
+
+public createAndUpdateAibeCode(newLead: Lead, platformSource: PlatformSource) {
+const newLeadAura: LeadAura = this.mapper.map(newLead, Lead, LeadAura);
+
+this.sourceService.platformSourceRepository.getPlatformSourceByBusiness(platformSource.businessId).then(result => {
+if (result) {
+newLeadAura.idcampaign = result.idCampaignExt;
+newLeadAura.origen = result.origenExt;
+}
+}).then(() => {
+return this.saveLeadAura(newLeadAura);
+}).then((result) => {
+if (result) {
+return this.leadRepository.updateLeadCodeExtById(newLead.id, result);
+}
+}).catch((error) => {
+this.logger.error('Se ha producido un error al crear y actualizar el código de Aibe', error);
+});
+}
+
+/**
+* Save lead aura
+*
+* @param leadAura
+*/
+public async saveLeadAura(leadAura: LeadAura): Promise<string> {
+return new Promise((setValue, setError) => {
+this.insertLeadAura(leadAura).then((result) => {
+const id = this.getIdFromResult(result)
+if (id) {
+this.logger.log(`Lead almacenado en Aibe con el id: ${id}`);
+} else {
+this.logger.warn(`Lead duplicado en Aibe`);
+}
+setValue(id);
+}).catch((error: AxiosError) => {
+this.logger.error(error, JSON.stringify(error.response?.data));
+setValue('');
+});
+});
+}
+
+/**
+* Insert lead aura
+*
+* @param leadAura
+* @private
+*/
+private async insertLeadAura(leadAura: LeadAura) {
+this.logger.log('Almacenando lead en Aibe');
+const requestConfig: AxiosRequestConfig = {
+params: {
+...leadAura
+}
+};
+
+const {data} = await firstValueFrom(
+this.httpService.get('https://aurasegurospre.aibecloud.com/insertleadaura.aspx', requestConfig)
+);
+return data;
+}
+
+/**
+* Get the id from result of save leadAura
+*
+* @param result
+* @private
+*/
+private getIdFromResult(result: string) {
+if (result.indexOf('ERROR: Lead DUPLICADO') == 0) {
+return '';
+}
+return result.substring(result.indexOf('Ok. Id.: ')+9).split(/[\n\r ]/g)[0];
+}
+
+
+public async getLeadSourceInfo(idLead) {
+const leadSourceInfo = await this.leadSourceInfoRepository.getLeadSourceInfo(idLead);
+return plainToInstance(LeadSourceInfoDto, leadSourceInfo, {strategy: 'excludeAll'});
+}
+
+public async getLeadInfo(lead: GetLeadInfoDto, sourceQueryLevelId: number) {
+const lastStateLead = await this.leadRepository.getLeadInfo(lead, sourceQueryLevelId);
+return plainToInstance(LeadDto, lastStateLead, {strategy: 'excludeAll'});
+}
+
+public async getSourceIdByLeadCode(leadCode: string): Promise<number | undefined> {
+return this.leadRepository.getSourceIdByLeadCode(leadCode);
+}
+}
+
+
+
+
+public async checkQuality(lead: Lead) {
+  const quality = {continueDispatch: true, isDuplicated: false, isPhoneNotValid: false, isPhoneInBlackList: false};
+
+  try {
+    if (!Util.isValidPhone(lead.phone1)) {
+      if (lead.phone2 && Util.isValidPhone(lead.phone2)) {
+        lead.phone1 = lead.phone2;
+        lead.phone2 = undefined;
+      } else {
+        lead.process = LEAD_SYSTEM.LEAD_PROCESS.INCORRECT;
+        await this.leadService.createLeadStateHistory(lead, new Date(), LEAD_SYSTEM.LEAD_STATE.INTERESTED, LEAD_SYSTEM.LEAD_STATE.SUB_STATES.LEAD_NOT_VALID);
+        quality.isPhoneNotValid = true;
+        return quality;
+      }
+    } else if (lead.phone2 && !Util.isValidPhone(lead.phone2)) {
+      lead.phone2 = undefined;
+    }
+
+    if (await this.blackListService.isPhoneInBlackList(lead.phone1)) {
+        lead.process = LEAD_SYSTEM.LEAD_PROCESS.BLACK_LIST;
+        await this.leadService.createLeadStateHistory(lead, new Date(), LEAD_SYSTEM.LEAD_STATE.INTERESTED, LEAD_SYSTEM.LEAD_STATE.SUB_STATES.LEAD_NOT_VALID);
+        quality.isPhoneInBlackList = true;
+        return quality;
+    } else if (lead.phone2 && await this.blackListService.isPhoneInBlackList(lead.phone2)) {
+        lead.phone2 = undefined;
+    }
+
+    if (!Util.isValidEmail(lead.email)) {
+        lead.process = LEAD_SYSTEM.LEAD_PROCESS.INCORRECT;
+        await this.leadService.createLeadStateHistory(lead, new Date(), LEAD_SYSTEM.LEAD_STATE.INTERESTED, LEAD_SYSTEM.LEAD_STATE.SUB_STATES.LEAD_NOT_VALID);
+    }
+
+    const duplicateLead = await this.leadService.leadRepository.getLastLeadByPhone(lead.phone1, lead.phone2, [lead.id], lead.product.id);
+    if (duplicateLead) {
+      if (duplicateLead.inceptionDate.getTime() > Util.getDateLastX(this.configLeadDispatcher.duplicateWithoutOriginInterval).getTime()) {
+        if (duplicateLead.inceptionDate.getTime() > Util.getDateLastX(this.configLeadDispatcher.duplicateInterval).getTime()) {
+          await this.leadService.createLeadStateHistory(lead, new Date(), LEAD_SYSTEM.LEAD_STATE.INTERESTED, LEAD_SYSTEM.LEAD_STATE.SUB_STATES.DUPLICATE);
+          await this.leadService.createLeadReference(lead, duplicateLead);
+          quality.isDuplicated = true;
+          quality.continueDispatch = false;
+        } else if (duplicateLead.inceptionDate.getTime() <= Util.getDateLastX(this.configLeadDispatcher.duplicateInterval).getTime() &&
+        duplicateLead.inceptionDate.getTime() > Util.getDateLastX(this.configLeadDispatcher.duplicateResendInterval).getTime()) {
+          const destination = await this.destinationService.destinationRepository.getDestinationByLead(duplicateLead.id);
+
+          if (destination?.active == true) {
+            const currentTimeZone = await this.leadDispatcherService.timeZoneRepository.getCurrentTimeZone();
+            this.logger.log(`${lead.leadCode} - Se reenvia a - ${destination.id}`);
+            quality.continueDispatch = false;
+            lead.process = LEAD_SYSTEM.LEAD_PROCESS.RESENT;
+            this.retrySendLeadContactCenter(true, destination.id, [destination.id], currentTimeZone.id, lead, false, 0);
+          }
+        } else if (duplicateLead.inceptionDate.getTime() <= Util.getDateLastX(this.configLeadDispatcher.duplicateResendInterval).getTime() &&
+        duplicateLead.inceptionDate.getTime() > Util.getDateLastX(this.configLeadDispatcher.duplicateWithoutOriginInterval).getTime()) {
+          const destination = await this.destinationService.destinationRepository.getDestinationByLead(duplicateLead.id);
+          this.logger.log(`${lead.leadCode} - Se reenvia a destino diferente de - ${destination.id}`);
+          lead.differentDestinationId = destination.id;
+          lead.process = LEAD_SYSTEM.LEAD_PROCESS.RESENT_DIFF_DEST;
+        }
+      }
+    }
+  } catch (error) {
+    quality.continueDispatch = false;
+    this.logger.error(`${lead.leadCode} - Hubo un error en el quality`, error);
+  }
+
+  return quality;
+}
+
+

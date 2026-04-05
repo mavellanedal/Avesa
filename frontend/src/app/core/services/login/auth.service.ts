@@ -1,10 +1,10 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment.dev';
 import { Router } from "@angular/router";
-import { User } from "../../models/auth/user.model";
-import { LoginRequest } from "../../models/auth/login-request.model";
-import { LoginResponse } from "../../models/auth/login-respones.model";
+import { User } from "../../models/auth/user";
+import { LoginRequest } from "../../models/auth/login-request";
+import { LoginResponse } from "../../models/auth/login-respones";
 import { tap } from 'rxjs';
 
 @Injectable({
@@ -29,7 +29,7 @@ export class AuthService {
   private readonly _http = inject(HttpClient);
   private readonly _route = inject(Router);
 
-  private readonly _apiUrl = `${environment.apiUrl}/auth`;
+  private readonly _apiUrl = `${environment.api}/auth`;
 
   public currentUser = signal<User | null>(null);
   public isAuthenticated = signal<boolean>(false);
@@ -51,10 +51,13 @@ export class AuthService {
   }
 
   private _saveSession(data: LoginResponse) {
-    localStorage.setItem("token", data.accessToken);
+    if (data.accessToken) {
+      localStorage.setItem("token", data.accessToken);
+    }
     localStorage.setItem('user', JSON.stringify(data.user));
-
-    this.currentUser.set(data.user);
+    if (data.user) {
+      this.currentUser.set(data.user);
+    }
     this.isAuthenticated.set(true);
   }
 }

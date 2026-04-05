@@ -8,4 +8,7 @@ export class Source extends BaseEntity {
 
   @Column({ type: 'varchar', length: 100, nullable: false })
   description: string;
+
+  @Column({ type: 'boolean', default: true })
+  active: boolean;
 }
