@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../core/services/login/auth.service';
-import { NgClass, NgOptimizedImage } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -15,8 +15,7 @@ import { NgClass, NgOptimizedImage } from '@angular/common';
     MatCardModule,
     MatInputModule,
     MatButtonModule,
-    NgClass,
-    NgOptimizedImage
+    NgClass
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'

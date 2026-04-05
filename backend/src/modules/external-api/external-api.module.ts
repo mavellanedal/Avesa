@@ -1,11 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ExternalApiController } from './controllers/external-api.controller';
-import { ExternalApiService } from './service/external-api.service';
+import { ExternalApiService } from './services/external-api.service';
 import { ExternalApiRepository } from './repository/external-api.repository';
 import { AuthModule } from '../auth/auth.module';
+import { SourceModule } from '@modules/internal/source/source.module';
+import { LeadModule } from '@modules/internal/lead/lead.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, SourceModule, forwardRef(() => LeadModule)],
   controllers: [ExternalApiController],
   providers: [ExternalApiService, ExternalApiRepository],
 })

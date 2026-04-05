@@ -8,12 +8,10 @@ import {
 } from 'typeorm';
 import { BaseUuidEntity } from './base-uuid.entity';
 import { Source } from './source.entity';
-import { LeadState } from './lead-state.entity';
 import { AppUser } from './app-user.entity';
 
 @Entity('lead')
 @Index('idx_lead_source', ['source'])
-@Index('idx_lead_state', ['currentState'])
 @Index('idx_lead_user', ['currentAssignedAppUser'])
 export class Lead extends BaseUuidEntity {
   @Column({ type: 'varchar', length: 50, nullable: false, unique: true })
@@ -29,15 +27,11 @@ export class Lead extends BaseUuidEntity {
   @Column({ type: 'varchar', length: 100, nullable: true })
   surname?: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  email?: string;
+  @Column({ type: 'varchar', length: 100, nullable: false })
+  email: string;
 
-  @Column({ type: 'varchar', length: 20, nullable: true })
-  phone?: string;
-
-  @ManyToOne(() => LeadState)
-  @JoinColumn({ name: 'current_state_id' })
-  currentState: LeadState;
+  @Column({ type: 'varchar', length: 50, nullable: false })
+  phone: string;
 
   @ManyToOne(() => AppUser)
   @JoinColumn({ name: 'current_assigned_app_user_id' })

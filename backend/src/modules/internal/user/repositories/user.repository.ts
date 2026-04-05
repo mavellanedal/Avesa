@@ -23,7 +23,7 @@ export class UserRepository {
   async findLoginUserByUsername(username: string): Promise<LoginUser | null> {
     return this.loginUserRepository.findOne({
       where: { username },
-      relations: ['appUser', 'roles'],
+      relations: ['groups', 'groups.functionalRoles', 'appUser', 'source'],
     });
   }
 

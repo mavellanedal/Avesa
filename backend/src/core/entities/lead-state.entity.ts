@@ -26,4 +26,11 @@ export class LeadState extends BaseEntity {
 
   @OneToMany(() => LeadState, (state) => state.parent)
   children: LeadState[];
+
+  constructor(id?: number) {
+    super();
+    if (id !== undefined) {
+      this.id = id;
+    }
+  }
 }

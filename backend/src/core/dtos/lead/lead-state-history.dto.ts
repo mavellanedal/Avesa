@@ -8,6 +8,10 @@ export class LeadStateHistoryDto {
   state: LeadStateDto;
 
   @Expose()
+  @Type(() => LeadStateDto)
+  subState: LeadStateDto;
+
+  @Expose()
   @Type(() => Date)
   changedAt: Date;
 }

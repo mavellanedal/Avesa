@@ -25,4 +25,11 @@ export class AppUser extends BaseUuidEntity {
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   createdAt: Date;
+
+  constructor(id?: string) {
+    super();
+    if (id !== undefined) {
+      this.id = id;
+    }
+  }
 }

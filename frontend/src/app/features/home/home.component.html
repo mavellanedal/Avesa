@@ -11,9 +11,7 @@
       }
 
       <button (click)="toggleSidebar()" class="text-gray-300 hover:text-white transition-colors">
-        <span class="material-symbols-rounded text-3xl">
-          {{ isCollapsed() ? 'left_panel_open' : 'left_panel_close' }}
-        </span>
+        <app-icon name="{{ isCollapsed() ? 'left_panel_open' : 'left_panel_close' }}" customClass="text-3xl"></app-icon>
       </button>
     </div>
   <nav class="flex-1 py-6 space-y-2 overflow-x-hidden overflow-y-hidden font-medium" [class.px-2]="!isCollapsed()">
@@ -26,10 +24,10 @@
         [class.px-4]="!isCollapsed()" [class.justify-center]="isCollapsed()"
         >
           <span class="material-symbols-rounded text-2xl group-hover:scale-110 transition-transform" [class.mr-3]="!isCollapsed()">
-            {{ item.icon }}
+            {{ item.icon}}
           </span>
           @if (!isCollapsed()) {
-            <span class="font-medium whitespace-nowrap">{{ item.label }}</span>
+            <span class="font-medium whitespace-nowrap">{{ item.label | transloco}}</span>
           }
         </a>
       }
@@ -37,9 +35,9 @@
 
     <div class="p-4">
       <button (click)="logout()" class="flex items-center w-full py-3 text-gray-300 hover:bg-hover! rounded-lg transition-colors text-xl overflow-hidden group" [class.mr-3]="!isCollapsed()">
-        <span class="material-symbols-rounded mr-3 text-2xl transform rotate-180 text-[#D82424]">logout</span>
+        <app-icon name="logout" customClass="mr-3 mr-3 text-2xl transform rotate-180 text-[#D82424]"></app-icon>
         @if(!isCollapsed()) {
-          <span class="font-medium">Cerrar Sesión</span>
+          <span class="font-medium">{{'home.logout' | transloco}}</span>
         }
       </button>
     </div>
@@ -48,13 +46,13 @@
     <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm z-10">
       <div>
         <h2 class="text-xl font-normal text-gray-400">
-          Bienvenido , <span class="text-primary font-semibold">{{ user()?.name }}</span>
+          {{ 'home.welcome' | transloco }} <span class="text-primary font-semibold">{{ user()?.name }}</span>
         </h2>
       </div>
 
       <div class="flex items-center space-x-4">
         <button class="relative p-2 text-gray-400 hover:text-primary transition-colors">
-          <span class="material-symbols-rounded">notifications</span>
+          <app-icon name="notifications"></app-icon>
           <span class="absolute top-2 right-2 w-2 h-2 bg-focus shadow-neon rounded-full"></span>
         </button>
 

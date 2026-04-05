@@ -1,23 +1,46 @@
-import { DataSource } from 'typeorm';
+import 'reflect-metadata';
+import { DataSource, DataSourceOptions, LogLevel } from 'typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import * as dotenv from 'dotenv';
-import * as path from 'path';
-import { ENTITIES } from '../core/entities';
+import * as process from 'process';
 
-dotenv.config({
-  path: path.resolve(
-    __dirname,
-    `../../.env.${process.env.NODE_ENV || 'development'}`,
-  ),
-});
+// 1. Importamos tu logger personalizado
+import { TypeOrmLogger } from './type-orm-logger';
 
-export const AppDataSource = new DataSource({
+// 2. Cargamos las variables de entorno de forma nativa con dotenv
+const envFile = process.env.NODE_ENV
+  ? `.env.${process.env.NODE_ENV}`
+  : '.env.development';
+dotenv.config({ path: envFile });
+
+// 3. Función helper adaptada a process.env
+function getLoggingOption(): boolean | 'all' | LogLevel[] {
+  const logging = process.env.DB_LOGGING;
+  if (!logging || logging === 'false') return false;
+  if (logging === 'true') return true;
+  if (logging.split(',').length > 1) return logging.split(',') as LogLevel[];
+  return 'all';
+}
+
+const loggingOptions = getLoggingOption();
+
+// 4. Configuración para PostgreSQL
+export const DataSourceConfig: DataSourceOptions = {
   type: 'postgres',
-  url: process.env.DATABASE_URL,
-
-  entities: [...ENTITIES],
-
-  migrations: [__dirname + '/../migrations/*{.ts,.js}'],
-
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT || '5432', 10),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  entities: [__dirname + '/../**/**/*.entity{.ts,.js}'],
+  migrations: [__dirname + '/../migrations/*.entity{.ts,.js}'],
   synchronize: false,
-  logging: process.env.NODE_ENV !== 'production',
-});
+  namingStrategy: new SnakeNamingStrategy(),
+  logging: loggingOptions,
+  logger: TypeOrmLogger.ForConnection('BBDD', loggingOptions as any),
+};
+
+// 6. Inicialización
+const AppDataSource = new DataSource(DataSourceConfig);
+
+export default AppDataSource;
