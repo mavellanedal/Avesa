@@ -4,8 +4,10 @@ import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { AuthService } from '../../core/services/login/auth.service';
 import { NgClass } from '@angular/common';
+import { AuthService } from '../../core/services/login/auth.service';
+import { LoginService } from '../../core/services/login/login.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-login',
@@ -18,10 +20,12 @@ import { NgClass } from '@angular/common';
     NgClass
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss' // Nota: podría fallar si es .scss o .css
 })
 export class LoginComponent {
   private readonly authSvc = inject(AuthService);
+  private readonly loginSvc = inject(LoginService);
+  private readonly jwtHelper = inject(JwtHelperService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
 
@@ -41,11 +45,22 @@ export class LoginComponent {
 
     const { username, password } = this.loginForm.getRawValue();
 
-    this.authSvc.login({ username: username!, password: password! })
+    this.loginSvc.login(username!, password!)
       .subscribe({
-        next: () => {
+        next: (resp) => {
           this.isLoading.set(false);
-          this.router.navigate(['/dashboard']);
+          const token = resp.headers.get(AuthService.TOKEN);
+
+          if (token) {
+            this.authSvc.setAuthToken(resp.headers);
+
+            const decodedToken = this.jwtHelper.decodeToken(token);
+            this.authSvc.setCurrentSession(decodedToken);
+
+            this.router.navigate(['/dashboard']);
+          } else {
+            this.errorMessage.set('No se recibió un token válido.');
+          }
         },
         error: (err) => {
           this.isLoading.set(false);

@@ -21,7 +21,8 @@ import { IconComponent } from '../../shared/components/icon.component';
 })
 export class HomeComponent {
   private authSvc = inject(AuthService);
-  public user = this.authSvc.currentUser;
+
+  public user = this.authSvc.getCurrentSession();
 
   public isCollapsed = signal(false);
 

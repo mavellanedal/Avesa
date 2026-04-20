@@ -4,65 +4,82 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from 'src/modules/internal/user/services/users.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { CreateTokenDto } from '@dtos/external-api/create-token.dto';
+import { Response, Request } from 'express';
 import { ROLES } from '@shared/constants/roles.constant';
-import { ExternalApiException } from '@modules/external-api/exceptions/externa-api.exception';
-import { CreateTokenResponseDto } from '@dtos/external-api/create-token-response.dto';
-import { Response } from 'express';
-
-export interface AuthResult {
-  token: string;
-  user: any;
-}
+import { UserService } from '@modules/internal/user/services/users.service';
 
 export interface JwtPayload {
   sub: string;
-  username: string | null;
-  roles: string[];
+  preferred_username: string;
+  name: string;
+  surname: string;
+  email: string;
   groups: string[];
-  name: string | null;
-  surname: string | null;
-  identificationNumber: string | null;
-  email: string | null;
-  phone: string | null;
-  sourceId: number | null;
+  roles: string[];
 }
 
 @Injectable()
 export class AuthService {
-  public static readonly AUTHORIZATION = 'Authorization';
-  public static readonly REFREESH_TOKEN = 'Refresh-Token';
   private readonly logger = new Logger(AuthService.name);
+  private static REFRESH_TOKEN = 'Refresh-token';
+  private static ID_TOKEN = 'Id-token';
+  static AUTHORIZATION = 'Authorization';
 
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
   ) {}
 
   public async login(createToken: CreateTokenDto, res: Response) {
     try {
-      const { user, payload } = await this.validateAndGetPayload(createToken);
+      const user = await this.userService.validateUserCredentials(
+        createToken.username,
+        createToken.password,
+      );
+      if (!user) throw new UnauthorizedException('Credenciales inválidas');
 
-      if (!payload.roles.includes(ROLES.LOGIN_AVESA)) {
+      const user = {
+        id: '12345-abcde',
+        username: createToken.username,
+        name: 'Juan',
+        surname: 'Pérez',
+        email: 'juan@example.com',
+        roles: [ROLES.LOGIN_AVESA, ROLES.EXTERNAL_API],
+      };
+      // ----------------------------------------------
+
+      if (!user.roles.includes(ROLES.LOGIN_AVESA)) {
         throw new UnauthorizedException(
-          'El usuario no tiene permisos para acceder a esta aplicación',
+          'El usuario no tiene permisos para acceder',
         );
       }
+      const payload: JwtPayload = {
+        sub: user.id,
+        preferred_username: user.username,
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+        groups: user.roles,
+        roles: user.roles,
+      };
 
-      const token = this.generateToken(payload);
+      const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+      const refreshToken = this.jwtService.sign(
+        { sub: user.id },
+        { expiresIn: '7d' },
+      );
+      const idToken = this.jwtService.sign(payload, { expiresIn: '15m' });
 
-      this.setTokens(res, token);
+      this.setTokens(res, accessToken, refreshToken, idToken);
+
       res.type('text/plain');
-
-      return Buffer.from(JSON.stringify(payload.roles)).toString('base64');
+      return Buffer.from(JSON.stringify(user.roles)).toString('base64');
     } catch (error) {
-      this.logger.error(error);
       if (error instanceof UnauthorizedException) {
         res
-          .status(HttpStatus.OK)
+          .status(HttpStatus.UNAUTHORIZED)
           .send(new UnauthorizedException(error.message));
       } else {
         throw error;
@@ -70,95 +87,63 @@ export class AuthService {
     }
   }
 
-  public async createToken(
-    createToken: CreateTokenDto,
-  ): Promise<CreateTokenResponseDto> {
+  public async logout(req: Request) {
+    const idToken = req.headers[AuthService.ID_TOKEN.toLowerCase()];
+    this.logger.log(`Usuario cerró sesión. Token: ${idToken}`);
+  }
+
+  public async refresh(req: Request, res: Response) {
+    const oldRefreshToken = req.headers[AuthService.REFRESH_TOKEN.toLowerCase()] as string;
+
+    if (!oldRefreshToken) {
+      throw new UnauthorizedException('No se proporcionó Refresh Token');
+    }
+
     try {
-      const { user, payload } = await this.validateAndGetPayload(createToken);
+      const decoded = this.jwtService.verify(oldRefreshToken);
 
-      if (!payload.roles.includes(ROLES.EXTERNAL_API)) {
-        throw new UnauthorizedException(
-          'El usuario no tiene permisos para acceder a esta aplicación',
-        );
-      }
+      const user = await this.userService.findById(decoded.sub);
 
-      const tokens = this.generateToken(payload);
+      const user = {
+        id: decoded.sub,
+        username: 'Juan',
+        name: 'Juan',
+        surname: 'Pérez',
+        email: 'juan@example.com',
+        roles: [ROLES.LOGIN_AVESA, ROLES.EXTERNAL_API],
+      };
 
-      return { token: tokens.access_token };
-    } catch (error) {
-      this.logger.error(error);
-      if (error instanceof UnauthorizedException) {
-        throw new ExternalApiException('Unauthorized', HttpStatus.UNAUTHORIZED);
-      } else {
-        throw error;
-      }
-    }
-  }
+      const payload: JwtPayload = {
+        sub: user.id,
+        preferred_username: user.username,
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+        groups: user.roles,
+        roles: user.roles,
+      };
 
-  private async validateAndGetPayload(createToken: CreateTokenDto) {
-    const loginUser = await this.usersService.findLoginUserByUsername(
-      createToken.username,
-    );
-
-    if (!loginUser) {
-      throw new UnauthorizedException(
-        'Credenciales inválidas o usuario inactivo',
+      const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+      const newRefreshToken = this.jwtService.sign(
+        { sub: user.id },
+        { expiresIn: '7d' },
       );
+      const idToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+      this.setTokens(res, accessToken, newRefreshToken, idToken);
+      return;
+    } catch (e) {
+      throw new UnauthorizedException('Refresh token inválido o expirado');
     }
-
-    const isPasswordValid = await bcrypt.compare(
-      createToken.password,
-      loginUser.password,
-    );
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciales inválidas');
-    }
-
-    const groupsNames = loginUser.groups?.map((g) => g.name) || [];
-
-    const rolesName = [
-      ...new Set(
-        loginUser.groups?.flatMap(
-          (g) => g.functionalRoles?.map((r) => r.name) || [],
-        ) || [],
-      ),
-    ];
-
-    const appUser = loginUser.appUser;
-
-    const payload: JwtPayload = {
-      sub: appUser.id ?? loginUser.appUserId,
-      username: loginUser.username,
-      groups: groupsNames,
-      roles: rolesName,
-      sourceId: loginUser.source?.id ?? null,
-      name: appUser.name,
-      surname: appUser?.surname,
-      email: appUser?.email,
-      identificationNumber: appUser?.identificationNumber,
-      phone: appUser?.phone,
-    };
-
-    return { user: loginUser, payload };
-  }
-
-  private generateToken(payload: JwtPayload) {
-    return {
-      access_token: this.jwtService.sign(payload, {
-        expiresIn: '15min',
-      }),
-      refresh_token: this.jwtService.sign(payload, {
-        expiresIn: '7d',
-      }),
-    };
   }
 
   private setTokens(
     res: Response,
-    tokens: { access_token: string; refresh_token: string },
+    accessToken: string,
+    refreshToken: string,
+    idToken: string,
   ) {
-    res.header(AuthService.AUTHORIZATION, `Bearer ${tokens.access_token}`);
-    res.header(AuthService.REFREESH_TOKEN, tokens.refresh_token);
+    res.header(AuthService.AUTHORIZATION, accessToken);
+    res.header(AuthService.REFRESH_TOKEN, refreshToken);
+    res.header(AuthService.ID_TOKEN, idToken);
   }
 }

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '../decorators/auth.decorator';
+import { IS_PUBLIC_KEY } from '@shared/constants/key-decorators.conststat';
 import { Request } from 'express';
 import { ClsUtil } from '@shared/utilities/clstUtil';
 import { UserUtil } from '@shared/utilities/userUtil';
