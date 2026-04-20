@@ -1,20 +1,33 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { PropertyOwnerDto } from './property-owner.dto';
-import { IsBoolean, IsDate, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsNumber, ValidateNested } from 'class-validator';
 import { PropertyTypeDto } from './property-type.dto';
+import { PropertyAddressDto } from './property-address.dto';
+import { PropertyStateDto } from './property-state.dto';
 
 export class PropertyDto {
-  id: string;
+  @Expose()
+  public id: number;
 
   @Expose()
+  @ValidateNested()
+  @Type(() => PropertyOwnerDto)
   public owner: PropertyOwnerDto;
 
   @Expose()
-  @IsString()
-  public address: string;
+  @ValidateNested()
+  @Type(() => PropertyAddressDto)
+  public address: PropertyAddressDto;
 
   @Expose()
+  @ValidateNested()
+  @Type(() => PropertyTypeDto)
   public type: PropertyTypeDto;
+
+  @Expose()
+  @ValidateNested()
+  @Type(() => PropertyStateDto)
+  public state: PropertyStateDto;
 
   @Expose()
   @IsNumber()

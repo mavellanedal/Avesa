@@ -12,10 +12,13 @@ import {
   ExternalApiException,
 } from '@modules/external-api/exceptions/externa-api.exception';
 import { plainToInstance } from 'class-transformer';
-import { Lead } from '@entities';
+import { Lead, Property, PropertyOwner } from '@entities';
 import { Source } from '@entities';
 import { LeadService } from '@modules/internal/lead/services/lead.service';
 import { QualityErrors } from '@modules/internal/lead/exceptions/lead.exceptions';
+import { CreatePropertyResponseDto } from '@dtos/external-api/create-property-response.dto';
+import { CreatePropertyDto } from '@dtos/external-api/create-property.dto';
+import { PropertyService } from '@modules/internal/property/service/property.service';
 
 @Injectable()
 export class ExternalApiService {
@@ -46,13 +49,13 @@ export class ExternalApiService {
     private readonly clsService: ClsService,
     private readonly sourceService: SourceService,
     private readonly leadService: LeadService,
+    private readonly propertyService: PropertyService,
   ) {}
 
   public async validateAndGenerateToken(
     createTokenDto: CreateTokenDto,
   ): Promise<CreateTokenResponseDto> {
-    const authResult =
-      await this.authService.createToken(createTokenDto);
+    const authResult = await this.authService.createToken(createTokenDto);
     return {
       token: authResult.token,
     };
@@ -105,6 +108,34 @@ export class ExternalApiService {
       throw error instanceof ExternalApiException
         ? error
         : new ExternalApiException(ExternalApiErrors.INSERT_LEAD);
+    }
+  }
+
+  public async insertProperty(
+    createProperty: CreatePropertyDto,
+  ): Promise<CreatePropertyResponseDto> {
+    try {
+      const owner = plainToInstance(PropertyOwner, createProperty.owner);
+      const newProperty = plainToInstance(Property, createProperty);
+      newProperty.owner = owner;
+
+      const property = await this.propertyService.createProperty(
+        newProperty,
+        createProperty.typeId,
+      );
+      if (!property)
+        throw new ExternalApiException(ExternalApiErrors.INSERT_PROPERTY);
+
+      const response = new CreatePropertyResponseDto();
+      response.success = true;
+      response.message = 'Propiedad insertada con éxito';
+
+      return response;
+    } catch (error) {
+      this.logger.error(error);
+      throw error instanceof ExternalApiException
+        ? error
+        : new ExternalApiException(ExternalApiErrors.INSERT_PROPERTY);
     }
   }
 }
