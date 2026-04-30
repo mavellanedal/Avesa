@@ -1,6 +1,6 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators/roles.decorator';
+import { ROLES_KEY } from '@shared/constants/key-decorators.conststat';
 import { JwtPayload } from '../services/auth.service';
 
 @Injectable()

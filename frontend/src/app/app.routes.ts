@@ -20,6 +20,10 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./features/welcome/welcome.component').then(m => m.WelcomeComponent)
+      },
+      {
+        path: 'user-tracking',
+        loadComponent: () => import('./features/users-tracking/user-tracking.component').then(m => m.default)
       }
     ]
   },

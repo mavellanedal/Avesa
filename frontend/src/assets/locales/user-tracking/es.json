@@ -1,0 +1,9 @@
+{
+  "identificationNumber": "Número de identificación",
+  "username": "Nombre de usuario",
+  "email": "Correo electrónico",
+  "name": "Nombre",
+  "surname": "Apellidos",
+  "createdDate": "Fecha de creación",
+  "add-user": "Agregar usuario"
+}

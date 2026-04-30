@@ -1,9 +1,14 @@
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { FilterDto } from '@dtos/common/filter.dto';
+import { Expose } from 'class-transformer';
 
-export class PropertyFilterDto {
+export class PropertyFilterDto extends FilterDto {
   @IsString()
   @IsOptional()
   public typeId?: string;
+
+  @Expose()
+  public state: number;
 
   @IsString()
   @IsOptional()
@@ -16,14 +21,6 @@ export class PropertyFilterDto {
   @IsString()
   @IsOptional()
   public ownerNif?: string;
-
-  @IsString()
-  @IsOptional()
-  public ownerPhone?: string;
-
-  @IsString()
-  @IsOptional()
-  public ownerEmail?: string;
 
   @IsNumber()
   @IsOptional()

@@ -1,0 +1,23 @@
+@use 'colors' as *;
+
+// Outlined form fields — tighten spacing and use project colors
+.mat-mdc-form-field {
+  &.mat-form-field-appearance-outline,
+  &.mdc-text-field--outlined {
+    --mdc-outlined-text-field-focus-outline-color: #{$secondary};
+    --mdc-outlined-text-field-focus-label-text-color: #{$secondary};
+    --mdc-outlined-text-field-label-text-color: #{$shade};
+    --mdc-outlined-text-field-outline-color: #{$border};
+    --mdc-outlined-text-field-hover-outline-color: #{$secondary};
+  }
+}
+
+// Select panel
+.mat-mdc-select-panel {
+  border-radius: 6px !important;
+}
+
+// Remove extra bottom margin from form fields in filter forms
+.filter-form mat-card-content .mat-mdc-form-field {
+  margin-bottom: 0;
+}

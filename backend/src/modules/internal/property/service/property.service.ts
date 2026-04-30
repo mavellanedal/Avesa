@@ -16,6 +16,7 @@ import { Util } from '@shared/utilities/util';
 import { PropertyOwnerRepository } from '../repository/property-owner.repository';
 import { PropertyStateHistoryRepository } from '../repository/property-state-history.repository';
 import { PROPERTY_SYSTEM } from '@shared/constants/property-system.constant';
+import { PropertyFilterDto } from '@dtos/property/property-filter.dto';
 
 @Injectable()
 export class PropertyService {
@@ -82,5 +83,11 @@ export class PropertyService {
     }
 
     await this.propertyStateHistoryRepository.insert(newHistory);
+  }
+
+  public async getPropertiesByFilter(propertyFilterDto: PropertyFilterDto) {
+    return await this.propertyRepository.getPropertiesByFilter(
+      propertyFilterDto,
+    );
   }
 }
