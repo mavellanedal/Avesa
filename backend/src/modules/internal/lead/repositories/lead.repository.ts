@@ -61,6 +61,7 @@ export class LeadRepository extends CustomRepository<Lead> {
         'lsh',
         'lsh.id = latest_history.max_id',
       )
+      .leftJoinAndMapOne('lsh.state', LeadState, 'ls', 'lsh.state.id = ls.id')
       .leftJoinAndMapOne(
         'lsh.subState',
         LeadState,
@@ -151,18 +152,18 @@ export class LeadRepository extends CustomRepository<Lead> {
         .innerJoin(
           (subQuery) => {
             return subQuery
-              .select('MAX(lsh_max.id)', 'max_id')
-              .addSelect('lsh_max.lead.id', 'leadId')
+              .select('MAX(lsh_max.changeDate)', 'max_date')
+              .addSelect('lsh_max.lead_id', 'lead_id')
               .from(LeadStateHistory, 'lsh_max')
-              .groupBy('lsh_max.lead.id');
+              .groupBy('lsh_max.lead_id');
           },
           'latest_history',
-          'latest_history.leadId = lead.id',
+          'latest_history.lead_id = lead.id',
         )
         .innerJoin(
           'lead.leadStateHistories',
           'lsh',
-          'lsh.id = latest_history.max_id',
+          'lsh.changeDate = latest_history.max_date AND lsh.lead_id = lead.id',
         )
         .innerJoin('lsh.leadState', 'state')
         .leftJoin('state.parent', 'parentState');
@@ -185,24 +186,22 @@ export class LeadRepository extends CustomRepository<Lead> {
 
     const totalLeadsPromise = this.createQueryBuilder('lead').getCount();
 
-    // Promesa 4: Los 4 leads con mejor score
     const topLeadsPromise = this.createQueryBuilder('lead')
       .innerJoin(
         (subQuery) =>
           subQuery
-            .select('MAX(lsh_max.id)', 'max_id')
-            .addSelect('lsh_max.lead.id', 'leadId')
+            .select('MAX(lsh_max.changeDate)', 'max_date')
+            .addSelect('lsh_max.lead_id', 'lead_id')
             .from(LeadStateHistory, 'lsh_max')
-            .groupBy('lsh_max.lead.id'),
+            .groupBy('lsh_max.lead_id'),
         'latest_history',
-        'latest_history.leadId = lead.id',
+        'latest_history.lead_id = lead.id',
       )
       .innerJoin(
         'lead.leadStateHistories',
         'lsh',
-        'lsh.id = latest_history.max_id',
+        'lsh.changeDate = latest_history.max_date AND lsh.lead_id = lead.id',
       )
-      // 🪄 MAGIA AQUÍ: Mapeamos el 'leadState' a la propiedad virtual 'currentState'
       .innerJoinAndMapOne('lead.currentState', 'lsh.leadState', 'state')
       .orderBy('lead.aiScore', 'DESC')
       .take(4)

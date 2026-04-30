@@ -11,7 +11,7 @@ import {
 } from '@nestjs/swagger';
 import { ExternalApiService } from '@modules/external-api/services/external-api.service';
 import { ErrorDto } from '@dtos/common/error.dto';
-import { PublicAccess } from '@modules/auth/decorators/auth.decorator';
+import { PublicAccess } from '@modules/auth/decorators/public.decorator';
 import { ApiErrorDescriptions } from '@shared/constants/api-errors-descriptions.constants';
 import { CreateTokenDto } from '@dtos/external-api/create-token.dto';
 import { CreateTokenResponseDto } from '@dtos/external-api/create-token-response.dto';

@@ -6,12 +6,12 @@ import {
   Post,
   Req,
   Res,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import { Response } from 'express';
-import { PublicAccess } from '../decorators/auth.decorator';
+import { Response, Request } from 'express';
+import { PublicAccess } from '@modules/auth/decorators/public.decorator';
 import { CreateTokenDto } from '@dtos/external-api/create-token.dto';
-import { Logger } from 'winston';
 import { ApiExcludeController } from '@nestjs/swagger';
 
 @ApiExcludeController()
@@ -34,8 +34,8 @@ export class AuthController {
   @PublicAccess()
   @HttpCode(HttpStatus.OK)
   @Post('logout')
-  async logout(@Req() req: Request) {
-    await this.authService.logout(req);
+  logout(@Req() req: Request) {
+    this.authService.logout(req);
   }
 
   @PublicAccess()

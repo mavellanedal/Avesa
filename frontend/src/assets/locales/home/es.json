@@ -2,5 +2,7 @@
   "welcome": "Bienvenido, ",
   "home": "Inicio",
   "logout": "Cerrar sesión",
-  "notifications": "Notificaciones"
+  "notifications": "Notificaciones",
+  "user-tracking": "Usuarios",
+  "leads": "Leads"
 }

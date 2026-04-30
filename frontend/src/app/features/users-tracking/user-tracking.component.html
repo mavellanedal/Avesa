@@ -1,0 +1,158 @@
+<mat-tab-group class="mat-tabs-with-background mat-background-primary">
+  <mat-tab [disabled]="true" labelClass="unique-tab" label="{{'blackList.black-list' | transloco}}">
+    <div class="main-inner">
+      <div class="Amain-detail">
+        <mat-card class="filter-form" appearance="outlined">
+          <mat-card-header class="mbottom20">
+            <mat-card-title>{{ 'blackList.title' | transloco }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="userTrackingFilterForm">
+              <mat-form-field class="w100" *transloco>
+                <mat-label>{{'state' | transloco}}</mat-label>
+                <mat-select formControlName="active">
+                  <mat-option [value]="''">{{'all' | transloco}}</mat-option>
+                  <mat-option [value]="true">{{'active' | transloco}}</mat-option>
+                  <mat-option [value]="false">{{'no-active' | transloco}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field class="w100">
+                <mat-label>{{'userTracking.identificationNumber' | transloco}}</mat-label>
+                <input matInput type="text" formControlName="identificationNumber" />
+                @if (userTrackingFilterForm.get('identificationNumber')?.invalid) {
+                  <!-- <mat-error>{{userTrackingFilterForm.getValidationErrorMessage(userTrackingFilterForm.get('identificarionNumber'))}}</mat-error> -->
+                }
+              </mat-form-field>
+
+              <mat-form-field class="w100">
+                <mat-label>{{'userTracking.username' | transloco}}</mat-label>
+                <input matInput type="text" formControlName="username" />
+                @if (userTrackingFilterForm.get('username')?.invalid) {
+                  <!-- <mat-error>{{userTrackingFilterForm.getValidationErrorMessage(userTrackingFilterForm.get('username'))}}</mat-error> -->
+                }
+              </mat-form-field>
+
+              <mat-form-field class="w100">
+                <mat-label>{{'userTracking.name' | transloco}}</mat-label>
+                <input matInput type="text" formControlName="name" />
+                @if (userTrackingFilterForm.get('name')?.invalid) {
+                  <!-- <mat-error>{{userTrackingFilterForm.getValidationErrorMessage(userTrackingFilterForm.get('name'))}}</mat-error> -->
+                }
+              </mat-form-field>
+
+              <mat-form-field class="w100">
+                <mat-label>{{'userTracking.surname' | transloco}}</mat-label>
+                <input matInput type="text" formControlName="surname" />
+                @if (userTrackingFilterForm.get('surname')?.invalid) {
+                  <!-- <mat-error>{{userTrackingFilterForm.getValidationErrorMessage(userTrackingFilterForm.get('surname'))}}</mat-error> -->
+                }
+              </mat-form-field>
+
+              <mat-form-field class="w100">
+                <mat-label>{{'userTracking.email' | transloco}}</mat-label>
+                <input matInput type="text" formControlName="email" />
+                @if (userTrackingFilterForm.get('email')?.invalid) {
+                  <!-- <mat-error>{{userTrackingFilterForm.getValidationErrorMessage(userTrackingFilterForm.get('email'))}}</mat-error> -->
+                }
+              </mat-form-field>
+
+            </form>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-raised-button color="accent" (click)="cleanFilterForm()">{{'clean' | transloco}}</button>
+            <button mat-raised-button color="primary" [disabled]="userTrackingFilterForm.invalid" (click)="applyFilterForm()">
+              {{'search' | transloco}}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
+      <div class="main-data">
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <button mat-icon-button (click)="openUserModal()" matTooltip="{{'userTracking.add-user' | transloco}}">
+              <mat-icon>add</mat-icon>
+            </button>
+            <div class="mat-elevation-z1">
+              <div class="table-container centeredValues">
+                <table
+                  [class]="dataUsers.data.length ? '' : 'h100'"
+                  mat-table
+                  [dataSource]="dataUsers"
+                  matSort
+                  (matSortChange)="sortChanges($event)"
+                  [matSortActive]="currentSort.active"
+                  [matSortDirection]="currentSort.direction"
+                  matSortStart="desc"
+                  [matSortDisableClear]="true"
+                  class="state"
+                >
+                  <ng-container matColumnDef="state">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td
+                      mat-cell
+                      *matCellDef="let row"
+                      class="state"
+                      matTooltip="{{(row.active ? 'active':'no-active') | transloco}}"
+                      matTooltipPosition="left"
+                    >
+                      <span [class]="row.active ? 'state-active' : 'state-no-active'"></span>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="username">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'userTracking.username' | transloco }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.username }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="email">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'userTracking.email' | transloco }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.appUser.email }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="createdDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'userTracking.createdDate' | transloco }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.appUser.createdDate | date:'short' }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell *matCellDef="let source">
+                      <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="openUserModal(source)">
+                          <mat-icon>edit</mat-icon>
+                          <span>{{'edit' | transloco}}</span>
+                        </button>
+                      </mat-menu>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+                  <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell noData" [attr.colspan]="displayedColumns.length">
+                      {{ 'no-data' | transloco }}
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <mat-paginator
+                [length]="resultsLength"
+                [pageSize]="pageSize"
+                [pageSizeOptions]="pageSizeOptions"
+                [showFirstLastButtons]="true"
+              >
+              </mat-paginator>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>
