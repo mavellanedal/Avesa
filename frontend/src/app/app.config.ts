@@ -27,6 +27,7 @@ import { provideMomentDatetimeAdapter } from '@ng-matero/extensions-moment-adapt
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { httpErrorInterceptor } from '@core/interceptors/http-error.interceptor';
+import { CustomMatPaginatorIntl } from '@services/custom-mat-paginator-int';
 
 
 registerLocaleData(localeEs, 'es')
@@ -104,7 +105,7 @@ export const appConfig: ApplicationConfig = {
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
     },
     {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: false }},
-    // { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl },
+    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl },
     { provide: ErrorStateMatcher, useClass: InstantErrorStateMatcher },
     provideMomentDatetimeAdapter(CUSTOM_DATE_TIME_FORMAT),
     {

@@ -1,8 +1,11 @@
 import { HttpClient } from "@angular/common/http";
-import { inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { environment } from "@envs/environment.dev";
 import { AuthService } from "./auth.service";
 
+@Injectable({
+  providedIn: 'root'
+})
 export class LoginService {
   private readonly http = inject(HttpClient);
 
@@ -12,7 +15,7 @@ export class LoginService {
   }
 
   logout(idToken: string) {
-    const header = {[AuthService.ID_TOKEN]: idToken}
+    const header = {[AuthService.ID_TOKEN]: idToken};
     return this.http.post(environment.api + '/auth/refresh', undefined, { observe: 'response', headers: header });
   }
 

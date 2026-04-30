@@ -46,7 +46,7 @@
     <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm z-10">
       <div>
         <h2 class="text-xl font-normal text-gray-400">
-          {{ 'home.welcome' | transloco }} <span class="text-primary font-semibold">{{ user()?.name }}</span>
+          {{ 'home.welcome' | transloco }} <span class="text-primary font-semibold">{{ user?.name }}</span>
         </h2>
       </div>
 
@@ -57,7 +57,7 @@
         </button>
 
         <div class="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm ring-2 ring-offset-2 ring-gray-100 cursor-pointer">
-          {{ user()?.name?.charAt(0) || 'U'}}
+          {{ user?.name?.charAt(0) || 'U'}}
         </div>
       </div>
     </header>
