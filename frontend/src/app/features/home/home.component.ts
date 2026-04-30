@@ -21,12 +21,14 @@ import { IconComponent } from '../../shared/components/icon.component';
 })
 export class HomeComponent {
   private authSvc = inject(AuthService);
-  public user = this.authSvc.currentUser;
+
+  public user = this.authSvc.getCurrentSession();
 
   public isCollapsed = signal(false);
 
   public menuItems = [
     { label: 'home.home', icon: 'home', route: 'dashboard' },
+    { label: 'home.user-tracking', icon: 'manage_accounts', route: 'user-tracking' },
   ]
 
   logout() {

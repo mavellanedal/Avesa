@@ -5,10 +5,12 @@ import {
   ManyToOne,
   CreateDateColumn,
   Index,
+  OneToMany
 } from 'typeorm';
 import { BaseUuidEntity } from './base-uuid.entity';
 import { Source } from './source.entity';
 import { AppUser } from './app-user.entity';
+import { LeadStateHistory } from './lead-state-history.entity';
 
 @Entity('lead')
 @Index('idx_lead_source', ['source'])
@@ -43,10 +45,10 @@ export class Lead extends BaseUuidEntity {
     nullable: true,
     name: 'ai_score',
   })
-  ai_score?: number;
+  aiScore?: number;
 
   @Column({ type: 'text', nullable: true })
-  ai_summary?: string;
+  aiSummary?: string;
 
   @Column({
     type: 'decimal',
@@ -99,4 +101,7 @@ export class Lead extends BaseUuidEntity {
 
   @CreateDateColumn({ type: 'timestamp', nullable: false, name: 'created_at' })
   createdAt: Date;
+
+  @OneToMany(() => LeadStateHistory, (history) => history.lead)
+  leadStateHistories: LeadStateHistory[];
 }

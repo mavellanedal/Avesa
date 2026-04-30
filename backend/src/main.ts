@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-// import 'winston-daily-rotate-file';
+import 'winston-daily-rotate-file'; // 🚨 Descomentado para que funcione el DailyRotateFile
 import * as process from 'process';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -17,6 +17,7 @@ import { UserUtil } from '@shared/utilities/userUtil';
 import { WinstonModule } from 'nest-winston';
 import { HttpExceptionFilter } from '@shared/interceptors/http-exception.filter';
 import { ErrorMessages } from '@shared/constants/validations-messages.constant';
+import { ExternalApiModule } from '@modules/external-api/external-api.module';
 
 async function bootstrap() {
   initializeTransactionalContext({ storageDriver: StorageDriver.AUTO });
@@ -32,14 +33,17 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.setGlobalPrefix('/api');
+
   const config = new DocumentBuilder()
-    .setTitle('Avesa Api')
+    .setTitle('Avesa Proptech')
     .setVersion('1.0')
-    .setDescription('Api from Avesa to work with Leads')
+    .setDescription('Api from Avesa to work with Leads and Properties')
     .addBearerAuth()
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    include: [ExternalApiModule],
+  });
   SwaggerModule.setup('documentation-api', app, document);
 
   await app.listen(configService.get<number>('PORT'), '0.0.0.0');
@@ -57,23 +61,24 @@ function getConfigLoggerOptions(isConsoleActive: boolean) {
       ...(colorize ? [] : [format.uncolorize()]),
       format.printf((info) => getPrintedLine(info)),
     );
+
   return {
     transports: [
-      // new transports.DailyRotateFile({
-      new transports.Console({
-        // filename: `logs/%DATE%-error.log`,
+      // 🚨 Sintaxis corregida: Usamos transports.DailyRotateFile directamente
+      new transports.DailyRotateFile({
+        filename: `logs/%DATE%-error.log`,
         level: 'error',
         format: commonFormat(false),
-        // datePattern: 'YYYY-MM-DD',
-        // zippedArchive: false,
+        datePattern: 'YYYY-MM-DD',
+        zippedArchive: false,
       }),
-      // new transports.DailyRotateFile({
-      new transports.Console({
-        // filename: `logs/%DATE%-all.log`,
+      new transports.DailyRotateFile({
+        filename: `logs/%DATE%-all.log`,
         format: commonFormat(false),
-        // datePattern: 'YYYY-MM-DD',
-        // zippedArchive: false,
+        datePattern: 'YYYY-MM-DD',
+        zippedArchive: false,
       }),
+      // Console activa solo si lo dice el .env
       ...(isConsoleActive
         ? [new transports.Console({ format: commonFormat(true) })]
         : []),

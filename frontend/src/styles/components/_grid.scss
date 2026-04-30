@@ -1,0 +1,21 @@
+.main-inner {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.main-detail {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.main-data {
+  flex: 1;
+  min-width: 0;
+
+  .mat-mdc-card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  }
+}

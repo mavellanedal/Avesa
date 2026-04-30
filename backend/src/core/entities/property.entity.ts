@@ -10,13 +10,11 @@ import {
 import { BaseUuidEntity } from './base-uuid.entity';
 import { PropertyOwner } from './property-owner.entity';
 import { PropertyType } from './property-type.entity';
-import { PropertyState } from './property-state.entity';
 import { PropertyAddress } from './property-address.entity';
 
 @Entity('property')
 @Index('idx_property_owner', ['owner'])
 @Index('idx_property_type', ['type'])
-@Index('idx_property_state', ['currentState'])
 export class Property extends BaseUuidEntity {
   @ManyToOne(() => PropertyOwner)
   @JoinColumn({ name: 'owner_id' })
@@ -25,10 +23,6 @@ export class Property extends BaseUuidEntity {
   @ManyToOne(() => PropertyType)
   @JoinColumn({ name: 'type_id' })
   type: PropertyType;
-
-  @ManyToOne(() => PropertyState)
-  @JoinColumn({ name: 'current_state_id' })
-  currentState: PropertyState;
 
   @Column({
     type: 'decimal',
