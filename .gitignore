@@ -7,3 +7,5 @@ backend/.env.production
 **/.DS_Store
 
 avesa_pgdata
+
+.idea
