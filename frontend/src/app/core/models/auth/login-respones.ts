@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { User } from "../user-tracking/user";
 
 export class LoginResponse {
   public accessToken?: string;

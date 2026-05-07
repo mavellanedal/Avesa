@@ -2,6 +2,7 @@ import { Expose } from 'class-transformer';
 import { IsDate, IsString } from 'class-validator';
 
 export class AppUserDto {
+  @Expose()
   public id: string;
 
   @Expose()

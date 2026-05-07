@@ -1,1 +1,213 @@
-@use 'styles/customStyles';
+@use "@angular/material" as mat;
+@use "@ng-matero/extensions" as mtx;
+
+@include mat.core();
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+/* You can add global styles to this file, and also import other style files */
+
+$avesa-primary-palette: (
+  50: #0A2342,
+  100: #0A2342,
+  200: #0A2342,
+  300: #0A2342,
+  400: #0A2342,
+  500: #0A2342,
+  600: #0A2342,
+  700: #0A2342,
+  800: #0A2342,
+  900: #0A2342,
+  contrast: (
+    50: #fff,
+    100: #fff,
+    200: #fff,
+    300: #fff,
+    400: #fff,
+    500: #fff,
+    600: #fff,
+    700: #fff,
+    800: #fff,
+    900: #fff,
+  ),
+);
+
+$avesa-accent-palette: (
+  50: #fff,
+  100: #fff,
+  200: #fff,
+  300: #fff,
+  400: #fff,
+  500: #fff,
+  600: #fff,
+  700: #fff,
+  800: #fff,
+  900: #fff,
+  contrast: (
+    50: #494949,
+    100: #494949,
+    200: #494949,
+    300: #494949,
+    400: #494949,
+    500: #494949,
+    600: #494949,
+    700: #494949,
+    800: #494949,
+    900: #494949,
+  ),
+);
+
+$typography-config: mat.m2-define-typography-config(
+  $font-family: "Quicksand, sans-serif",
+  $headline-1: mat.m2-define-typography-level(112px, 112px, 300),
+  $headline-2: mat.m2-define-typography-level(56px, 56px, 400),
+  $headline-3: mat.m2-define-typography-level(45px, 48px, 400),
+  $headline-4: mat.m2-define-typography-level(34px, 40px, 400),
+  $headline-5: mat.m2-define-typography-level(24px, 32px, 400),
+  $headline-6: mat.m2-define-typography-level(20px, 32px, 500),
+  $subtitle-1: mat.m2-define-typography-level(16px, 28px, 400),
+  $body-1: mat.m2-define-typography-level(14px, 20px, 400),
+  $body-2: mat.m2-define-typography-level(12px, 20px, 400),
+  $subtitle-2: mat.m2-define-typography-level(13px, 28px, 500),
+  $caption: mat.m2-define-typography-level(12px, 20px, 400),
+  $button: mat.m2-define-typography-level(14px, 14px, 500),
+);
+
+$avesa-theme-primary: mat.m2-define-palette($avesa-primary-palette);
+$avesa-theme-accent: mat.m2-define-palette($avesa-accent-palette);
+
+$avesa-light-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $avesa-theme-primary,
+      accent: $avesa-theme-accent,
+    ),
+    typography: $typography-config,
+  )
+);
+
+@include mat.all-component-themes($avesa-light-theme);
+@include mtx.all-component-themes($avesa-light-theme);
+@include mtx.all-component-themes($avesa-light-theme);
+
+html,
+body {
+  font-family: "Quicksand", sans-serif !important;
+  height: 100%;
+  margin: 0;
+  --mat-toolbar-standard-height: 50px;
+  --mat-option-label-text-color: #494949;
+  --mat-optgroup-label-text-color: #494949;
+  --mat-app-text-color: #494949;
+  --mdc-filled-text-field-input-text-color: #494949;
+  --mdc-filled-text-field-hover-active-indicator-color: #494949;
+  --mdc-outlined-text-field-input-text-color: #494949;
+  --mdc-outlined-text-field-hover-outline-color: #494949;
+  --mat-form-field-state-layer-color: #494949;
+  --mat-select-enabled-trigger-text-color: #494949;
+  --mdc-dialog-subhead-color: #494949;
+  --mat-switch-label-text-color: #494949;
+  --mat-radio-label-text-color: #494949;
+  --mat-menu-item-label-text-color: #494949;
+  --mat-menu-item-icon-color: #494949;
+  --mdc-list-list-item-label-text-color: #494949;
+  --mdc-list-list-item-hover-label-text-color: #494949;
+  --mdc-list-list-item-focus-label-text-color: #494949;
+  --mat-paginator-container-text-color: #494949;
+  --mat-checkbox-label-text-color: #494949;
+  --mat-table-header-headline-color: #494949;
+  --mat-table-row-item-label-text-color: #494949;
+  --mat-bottom-sheet-container-text-color: #494949;
+  --mat-standard-button-toggle-text-color: #494949;
+  --mat-standard-button-toggle-selected-state-text-color: #494949;
+  --mat-standard-button-toggle-disabled-selected-state-text-color: #494949;
+  --mat-datepicker-calendar-date-text-color: #494949;
+  --mat-datepicker-range-input-separator-color: #494949;
+  --mat-datepicker-calendar-container-text-color: #494949;
+  --mat-expansion-container-text-color: #494949;
+  --mat-expansion-header-text-color: #494949;
+  --mat-sidenav-container-text-color: #494949;
+  --mat-sidenav-content-text-color: #494949;
+  --mat-stepper-header-selected-state-label-text-color: #494949;
+  --mat-toolbar-container-text-color: #494949;
+  --mat-tree-node-text-color: #494949;
+  --mdc-text-button-label-text-color: #494949;
+  --mdc-icon-button-icon-color: #0A2342;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition:
+    background-color 0s 600000s,
+    color 0s 600000s !important;
+}
+
+.green-color {
+  color: #16a34a !important;
+}
+
+.blue-color {
+  color: #2563eb !important;
+}
+
+mat-error {
+  font-size: 11px;
+}
+
+.form-tab {
+  mat-tab-header {
+    border-radius: 4px;
+    background: #0A234216 !important;
+  }
+}
+
+.no-margin-form-field {
+  .mat-mdc-form-field-bottom-align {
+    display: none;
+  }
+}
+
+
+
+.mat-tabs-with-background {
+  max-height: 100vh;
+
+  mat-tab-header:not(mat-tab-group:not(.mat-tabs-with-background) *) {
+    padding-top: 2px;
+    background: linear-gradient(90deg, #0A2342 0%, #003567 100%) !important;
+  }
+
+  .unique-tab:not(mat-tab-group:not(.mat-tabs-with-background) *) {
+    opacity: 1 !important;
+    pointer-events: none !important;
+  }
+
+  .mdc-tab-indicator__content:not(mat-tab-group:not(.mat-tabs-with-background) *) {
+    border-width: 0 !important;
+  }
+
+  .mat-tabs-with-background:not(mat-tab-group:not(.mat-tabs-with-background) *) {
+    padding-top: -4px !important;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+// Tooltip multiline para campos con helpText largo (workflow editor)
+.panel__tooltip--multiline .mdc-tooltip__surface {
+  white-space: pre-line;
+  max-width: 360px;
+  text-align: left;
+  line-height: 1.4;
+}
+
+// Prompt editor modal dialog
+.prompt-editor-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.prompt-editor-dialog .mat-mdc-dialog-container .mdc-dialog__content {
+  padding: 0;
+  max-height: none;
+}

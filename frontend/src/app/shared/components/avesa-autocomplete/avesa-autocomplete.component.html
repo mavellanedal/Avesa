@@ -1,0 +1,13 @@
+<mat-form-field class="{{customClass()}}">
+  <mat-label>{{label() | transloco}}</mat-label>
+  <input #dataAutocomplete type="text" placeholder="{{placeHolder() | transloco}}" matInput [formControl]="control()"
+         [matAutocomplete]="autoData" (input)="filterData()" (focus)="filterData()">
+  <mat-autocomplete #autoData="matAutocomplete" [requireSelection]="requireSelection()" [displayWith]="getDataName.bind(this)">
+    @for (data of filteredData; track data.id) {
+      <mat-option [value]="data.id">{{data[name()]}}</mat-option>
+    }
+  </mat-autocomplete>
+  @if (control().invalid) {
+    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(control())}}</mat-error>
+  }
+</mat-form-field>

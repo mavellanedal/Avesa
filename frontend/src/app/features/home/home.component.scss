@@ -1,0 +1,75 @@
+.layout {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.main-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.content-area {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+.header {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  z-index: 9;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.notification-btn {
+  position: relative;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background-color: #00E0FF;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #FBBF24;
+}
+
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-icon {
+  font-size: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+
+  small {
+    font-size: 10px;
+    opacity: 0.75;
+  }
+
+  strong {
+    font-size: 13px;
+  }
+}
+
+.logout-icon {
+  color: #D82424
+}

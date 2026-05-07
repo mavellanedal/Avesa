@@ -1,0 +1,11 @@
+<mat-dialog-content>
+  <div [align]="'center'">
+    <mat-icon color="{{config.type.color}}" class="icon-big">{{config.type.icon}}</mat-icon>
+    <p class="title">{{config.type.title | transloco}}</p>
+    <p><b>{{config.title | transloco}}</b></p>
+    <p class="message">{{(config.message ? config.message : config.type.message ) | transloco}}</p>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="center">
+  <button mat-button mat-dialog-close color="primary">{{'ok' | transloco}}</button>
+</mat-dialog-actions>

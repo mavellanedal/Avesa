@@ -5,8 +5,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { NgClass } from '@angular/common';
-import { AuthService } from '../../core/services/login/auth.service';
-import { LoginService } from '../../core/services/login/login.service';
+import { AuthService } from '@services/login/auth.service';
+import { LoginService } from '@services/login/login.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
@@ -20,7 +20,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
     NgClass
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss' // Nota: podría fallar si es .scss o .css
+  styleUrl: './login.component.scss'
 })
 export class LoginComponent {
   private readonly authSvc = inject(AuthService);
@@ -56,6 +56,7 @@ export class LoginComponent {
 
             const decodedToken = this.jwtHelper.decodeToken(token);
             this.authSvc.setCurrentSession(decodedToken);
+            this.authSvc.setRoles(decodedToken.roles);
 
             this.router.navigate(['/dashboard']);
           } else {

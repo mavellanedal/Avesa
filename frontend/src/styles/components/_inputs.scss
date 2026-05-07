@@ -1,23 +1,20 @@
-@use 'colors' as *;
-
-// Outlined form fields — tighten spacing and use project colors
-.mat-mdc-form-field {
-  &.mat-form-field-appearance-outline,
-  &.mdc-text-field--outlined {
-    --mdc-outlined-text-field-focus-outline-color: #{$secondary};
-    --mdc-outlined-text-field-focus-label-text-color: #{$secondary};
-    --mdc-outlined-text-field-label-text-color: #{$shade};
-    --mdc-outlined-text-field-outline-color: #{$border};
-    --mdc-outlined-text-field-hover-outline-color: #{$secondary};
-  }
+.mat-mdc-form-field-error-wrapper {
+  padding: 0 1px !important;
 }
 
-// Select panel
-.mat-mdc-select-panel {
-  border-radius: 6px !important;
+.mat-mdc-form-field-infix:has(.mat-datepicker-input) {
+  width: 144px;
 }
 
-// Remove extra bottom margin from form fields in filter forms
-.filter-form mat-card-content .mat-mdc-form-field {
-  margin-bottom: 0;
+.mat-mdc-form-field-infix:has(+ .mat-mdc-form-field-icon-suffix) {
+  width: 160px;
+}
+
+.mat-mdc-form-field-infix:has(> input.percentage):has(+ .mat-mdc-form-field-text-suffix) {
+  width: 170px;
+}
+
+input.hide-number-button::-webkit-outer-spin-button,
+input.hide-number-button::-webkit-inner-spin-button {
+  display: none;
 }

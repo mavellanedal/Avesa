@@ -1,47 +1,35 @@
-@use 'colors' as *;
-
-// Tab group used as page header
-.mat-tabs-with-background {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  .mat-mdc-tab-body-wrapper {
-    flex: 1;
-    overflow: auto;
+.main {
+  &-content {
+    flex: 1 0 auto;
   }
 
-  .mat-mdc-tab-body-content {
-    height: 100%;
-    overflow: auto;
-  }
+  &-inner {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 18px 18px 2px;
 
-  &.mat-background-primary {
-    .mat-mdc-tab-header {
-      background-color: $secondary;
-    }
-
-    .mat-mdc-tab .mdc-tab__text-label,
-    .mat-mdc-tab-link .mdc-tab__text-label {
-      color: rgba(255, 255, 255, 0.9);
-    }
-
-    .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-      color: #ffffff;
-    }
-
-    .mdc-tab-indicator__content--underline {
-      border-color: $accent;
+    @media only screen and (min-width: 1279px) {
+      flex-wrap: nowrap;
     }
   }
-}
 
-// Disabled tab used as page title label
-.unique-tab {
-  cursor: default;
-  pointer-events: none;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  opacity: 1 !important;
+  &-detail {
+    flex: 0 0 100%;
+    margin-bottom: 15px;
+
+    @media only screen and (min-width: 1025px) {
+      flex: 0 0 265px;
+    }
+  }
+
+  &-data {
+    flex: 0 0 100%;
+    margin: 0;
+
+    @media only screen and (min-width: 1279px) {
+      width: 100%;
+      flex: auto !important;
+      margin-left: 15px;
+    }
+  }
 }

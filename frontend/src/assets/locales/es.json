@@ -18,5 +18,8 @@
     "first-page": "Primera página",
     "last-page": "Última página",
     "separator-of": "de"
-  }
+  },
+  "start": "Dashboard",
+  "ok": "Aceptar",
+  "cancel": "Cancelar"
 }

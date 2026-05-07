@@ -1,9 +1,11 @@
-@use 'components/colors';
-@use 'components/density';
-@use 'components/main';
-@use 'components/grid';
-@use 'components/helpers';
-@use 'components/icons';
-@use 'components/inputs';
-@use 'components/form';
-@use 'components/table';
+@charset "UTF-8";
+
+@use "components/colors";
+@use "components/helpers";
+@use "components/table";
+@use "components/main";
+@use "components/grid";
+@use "components/density";
+@use "components/form";
+@use "components/inputs";
+@use "components/icons";

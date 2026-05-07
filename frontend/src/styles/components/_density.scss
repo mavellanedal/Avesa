@@ -1,14 +1,20 @@
-// Angular Material density overrides via CSS custom properties
-.mat-mdc-form-field {
-  --mdc-outlined-text-field-container-height: 48px;
+@use '@angular/material' as mat;
+
+//Table
+@include mat.table-density(-3);
+
+//Form field
+@include mat.form-field-density(-5);
+
+.form-field-d0 {
+  @include mat.form-field-density(0);
 }
 
-.mat-mdc-table {
-  .mat-mdc-row {
-    height: 52px;
-  }
+//Icon button
+@include mat.icon-button-density(-5);
 
-  .mat-mdc-header-row {
-    height: 48px;
-  }
-}
+//Checkbox
+@include mat.checkbox-density(-5);
+
+//Button
+@include mat.button-density(-1);

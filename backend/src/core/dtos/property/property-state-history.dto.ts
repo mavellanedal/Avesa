@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
 import { PropertyDto } from './property.dto';
 import { PropertyStateDto } from './property-state.dto';
-import { AppUserDto } from '@dtos/auth/appUser.dto';
+import { AppUserDto } from '../auth/app-user.dto';
 import { IsDate } from 'class-validator';
 
 export class PropertyStateHistoryDto {

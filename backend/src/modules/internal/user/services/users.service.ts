@@ -1,59 +1,113 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
-import { LoginUser } from 'src/core/entities';
-import { CreateUserDto } from 'src/core/dtos/user/create-user.dto';
 import { UserFilterDto } from '@dtos/user/user-filter.dto';
-import * as bcrypt from 'bcrypt';
+import { UserDto } from '@dtos/user/user.dto';
+import { UserUtil } from '@shared/utilities/userUtil';
+import { plainToInstance } from 'class-transformer';
+import { ResponseDataDto } from '@dtos/common/response-data.dto';
+import { Util } from '@shared/utilities/util';
+import { LoginUser } from 'src/core/entities';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
   constructor(private readonly userRepository: UserRepository) {}
 
-  public async validateUserCredentials(
-    username: string,
-    passwordStr: string,
-  ): Promise<LoginUser | null> {
-    const user = await this.findLoginUserByUsername(username);
+  private async validateGroupAssigment(groups: string[]) {
+    const allGroups = await this.getGroups();
 
-    if (!user) {
-      return null;
+    const userLevel = UserUtil.getUserMinLevel(allGroups);
+
+    if (userLevel === 0) return;
+
+    for (const name of groups) {
+      const targetGroup = allGroups.find((g) => g.name === name);
+      const targetGroupLevel = UserUtil.getGroupLevel(targetGroup);
+
+      if (targetGroupLevel < userLevel) {
+        throw new ForbiddenException(
+          `No tienes permisos para asignar el grupo ${name}.`,
+        );
+      }
     }
-    const isPasswordValid = await bcrypt.compare(passwordStr, user.password);
-
-    if (!isPasswordValid) {
-      return null;
-    }
-
-    return user;
   }
 
-  public async findById(id: string): Promise<LoginUser | null> {
-    return this.userRepository.findLoginUserById(id);
-  }
-
-  public async createFullUser(
-    createUserDto: CreateUserDto,
-  ): Promise<LoginUser> {
-    const existingUser = await this.userRepository.findLoginUserByUsername(
-      createUserDto.username,
-    );
-    if (existingUser) {
-      throw new ConflictException('Username already exists');
+  public async createUser(userDto: UserDto): Promise<UserDto> {
+    const exists = await this.existsUser(userDto.username);
+    if (exists) {
+      throw new ConflictException('El nombre de usuario ya existe');
     }
-    return this.userRepository.createFullUser(createUserDto);
+
+    return Util.transactional(async () => {
+      const savedUser =
+        await this.userRepository.createUserTransaction(userDto);
+      return plainToInstance(UserDto, savedUser, { strategy: 'excludeAll' });
+    }).catch((error) => {
+      if (
+        error instanceof ConflictException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+      this.logger.error('Se ha producido un error al crear el usuario', error);
+      throw new InternalServerErrorException(
+        'Se ha producido un error al crear el usuario',
+      );
+    });
   }
 
-  public async findLoginUserByUsername(
-    username: string,
-  ): Promise<LoginUser | null> {
+  public async updateUser(userDto: UserDto): Promise<UserDto> {
+    return Util.transactional(async () => {
+      const updatedUser = await this.userRepository.updateUserTransaction(userDto);
+      return plainToInstance(UserDto, updatedUser, { strategy: 'excludeAll' });
+    }).catch((error) => {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException ||
+        error instanceof ConflictException
+      ) {
+        throw error;
+      }
+      this.logger.error('Se ha producido un error al actualizar el usuario', error);
+      throw new InternalServerErrorException(
+        'Se ha producido un error al actualizar el usuario',
+      );
+    });
+  }
+
+  public async findLoginUserByUsername(username: string): Promise<LoginUser | null> {
     return this.userRepository.findLoginUserByUsername(username);
   }
 
-  public async findAppUserById(id: string) {
-    return this.userRepository.findAppUserById(id);
+  public async getUser(id: string): Promise<UserDto> {
+    const user = await this.userRepository.getUser(id);
+    return plainToInstance(UserDto, user, { strategy: 'excludeAll' });
   }
 
-  public async getUsersByFilter(userFilterDto: UserFilterDto) {
-    return this.userRepository.getUsersByFilter(userFilterDto);
+  public async getUsersByFilter(
+    userFilter: UserFilterDto,
+  ): Promise<ResponseDataDto<UserDto>> {
+    const [users, total] = await this.userRepository.getUsersByFilter(userFilter);
+    const result = new ResponseDataDto<UserDto>();
+    result.data = plainToInstance(UserDto, users, {
+      strategy: 'excludeAll',
+    }) as unknown as UserDto;
+    result.totalCount = total as number;
+    return result;
+  }
+
+  public async getGroups() {
+    return this.userRepository.getGroups();
+  }
+
+  public existsUser(username: string): Promise<boolean> {
+    return this.userRepository.existsUser(username);
   }
 }

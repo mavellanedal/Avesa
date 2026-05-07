@@ -1,0 +1,23 @@
+{
+  "email": "Correo invalido",
+  "multi-email": "Correo/s invalido/s",
+  "minlength": "Mínimo {{value}} carácteres",
+  "maxlength": "Máximo {{value}} carácteres",
+  "required": "Campo requerido",
+  "userNameExists": "Nombre de usuario ya existe",
+  "matDatepickerParse": "Fecha invalida",
+  "time": "Tiempo invalido",
+  "minNumber": "Mínimo {{value}} número/s",
+  "minLowerLetter": "Mínimo {{value}} minúscula/s",
+  "minUpperLetter": "Mínimo {{value}} mayúscula/s",
+  "passwordNotMatch": "Contraseñas no coinciden",
+  "min": "Valor mínimo {{value}}",
+  "max": "Valor máximo {{value}}",
+  "dateLessStart": "La fecha es inferior al inicio",
+  "minTime": "Tiempo mínimo {{value}}",
+  "mtxDatetimepickerMin": "Tiempo inferior",
+  "mtxDatetimepickerMax": "Tiempo superior",
+  "mtxDatetimepickerParse": "Fecha o hora invalida",
+  "pattern": "Debe tener como máximo 2 decimales",
+  "mediatorCodeNotExist": "El código de mediador no existe"
+}

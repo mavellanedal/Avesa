@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>
+  <mat-icon class="confirm-icon" [color]="config.type?.color || 'advise'">
+    {{ config.type?.icon || 'info' }}
+  </mat-icon>
+  <br />
+  {{ config.title | transloco }}
+</h2>
+<mat-dialog-content>
+  {{ config.message | transloco: config.messageExtra }}
+</mat-dialog-content>
+<mat-dialog-actions>
+  @if (config.isNo) {
+    <button mat-raised-button color="accent" mat-dialog-close>
+      {{ config.buttonNo | transloco }}
+    </button>
+  }
+  @if (config.isYes) {
+    <button mat-raised-button color="primary" (click)="yes()">
+      {{ config.buttonYes | transloco }}
+    </button>
+  }
+</mat-dialog-actions>
