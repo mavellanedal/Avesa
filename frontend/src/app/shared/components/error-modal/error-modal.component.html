@@ -1,0 +1,19 @@
+<mat-dialog-content>
+  <div [align]="'center'">
+    <mat-icon color="warn" class="icon-big">error</mat-icon>
+    <p class="title">{{'warning' | transloco}}</p>
+    @if (error && error.typeError === ErrorType.NOT_ALLOWED) {
+      <p><b>{{'error.title-not-allowed' | transloco}}</b></p>
+    } @else {
+      <p><b>{{'error.title' | transloco}}</b></p>
+    }
+    @if (error && error.status === 401) {
+      <p class="message">{{'error.unauthorized' | transloco}}</p>
+    } @else if (error && error.status) {
+      <p class="message">{{error.message}}</p>
+    }
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="center">
+  <button mat-button mat-dialog-close color="primary">{{'ok' | transloco}}</button>
+</mat-dialog-actions>

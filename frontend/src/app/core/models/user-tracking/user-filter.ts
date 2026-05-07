@@ -1,12 +1,9 @@
-export class UserFilter {
+import {BaseFilter} from '@models/base-filter';
+
+export class UserFilter extends BaseFilter {
+  public id?: string;
+  public username?: string;
   public name?: string;
   public surname?: string;
-  public identificationNumber?: string;
-  public username?: string;
   public email?: string;
-  public active?: boolean;
-  public sortBy?: string;
-  public orderBy?: 'ASC' | 'DESC';
-  public first?: number;
-  public max?: number;
 }

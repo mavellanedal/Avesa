@@ -19,6 +19,9 @@ export class Group extends BaseEntity {
   @Column({ nullable: false, type: 'varchar', length: 100 })
   description: string;
 
+  @Column({ nullable: true, type: 'int' })
+  level: number;
+
   @ManyToMany(() => FunctionalRole)
   @JoinTable({
     name: 'groups_functional_role',

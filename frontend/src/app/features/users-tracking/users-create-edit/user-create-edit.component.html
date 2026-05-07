@@ -1,0 +1,110 @@
+<h2 mat-dialog-title>{{(editUser ? 'userTracking.edit-user' : 'userTracking.new-user') | transloco:editUser ? {value: editUser.username} : undefined }} </h2>
+<mat-dialog-content>
+  <form [formGroup]="userForm">
+    <mat-grid-list cols="2" rowHeight="80">
+      <mat-grid-tile>
+        <mat-form-field>
+          <mat-label>{{'userTracking.username' | transloco}}</mat-label>
+          <input matInput type="text" formControlName="userName"
+                 (blur)="userNameExistsValidator(userForm.get('userName'))">
+          @if (userForm.get('userName')?.invalid) {
+            <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(userForm.get('userName'))}}</mat-error>
+          }
+        </mat-form-field>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <mat-form-field>
+          <mat-label>{{'userTracking.email' | transloco}}</mat-label>
+          <input matInput type="text" formControlName="email">
+          @if (userForm.get('email')?.invalid) {
+            <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(userForm.get('email'))}}</mat-error>
+          }
+        </mat-form-field>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <mat-form-field>
+          <mat-label>{{'userTracking.first-name' | transloco}}</mat-label>
+          <input matInput type="text" formControlName="firstName">
+          @if (userForm.get('name')?.invalid) {
+            <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(userForm.get('firstName'))}}</mat-error>
+          }
+        </mat-form-field>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <mat-form-field>
+          <mat-label>{{'userTracking.last-name' | transloco}}</mat-label>
+          <input matInput type="text" formControlName="lastName">
+          @if (userForm.get('surname')?.invalid) {
+            <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(userForm.get('lastName'))}}</mat-error>
+          }
+        </mat-form-field>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <mat-form-field>
+          <mat-label>{{'userTracking.identification-number' | transloco}}</mat-label>
+          <input matInput type="text" formControlName="identificationNumber">
+          @if (userForm.get('identificationNumber')?.invalid) {
+            <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(userForm.get('identificationNumber'))}}</mat-error>
+          }
+        </mat-form-field>
+      </mat-grid-tile>
+      @if (!editUser || changePassword()) {
+        <mat-grid-tile>
+          <mat-form-field>
+            <mat-label>{{'userTracking.password' | transloco}}</mat-label>
+            <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password">
+            <button type="button" mat-icon-button matSuffix (click)="hidePassword.set(!hidePassword())">
+              <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            @if (userForm.get('password')?.invalid) {
+              <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(userForm.get('password'))}}</mat-error>
+            }
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field>
+            <mat-label>{{'userTracking.confirm-password' | transloco}}</mat-label>
+            <input matInput [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword">
+            <button type="button" mat-icon-button matSuffix (click)="hideConfirmPassword.set(!hideConfirmPassword())">
+              <mat-icon>{{hideConfirmPassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            @if (userForm.get('confirmPassword')?.invalid) {
+              <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(userForm.get('confirmPassword'))}}</mat-error>
+            }
+          </mat-form-field>
+        </mat-grid-tile>
+      }
+      <mat-grid-tile>
+        <mat-form-field>
+          <mat-label>{{'userTracking.group' | transloco}}</mat-label>
+          <mat-select [compareWith]="compareGroups" #matSelectGroup formControlName="userGroup" multiple matTooltip="{{matSelectGroup.triggerValue}}">
+            @for (group of data.groups; track group.id) {
+              <mat-option [value]="group" matTooltip="{{group.description}}">{{group.name}}</mat-option>
+            }
+          </mat-select>
+          @if (userForm.get('userGroup')?.invalid) {
+            <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(userForm.get('userGroup'))}}</mat-error>
+          }
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list cols="2" rowHeight="50">
+      <mat-grid-tile>
+        <div class="checkbox-container">
+          <mat-checkbox formControlName="enabled" color="primary">{{'active' | transloco}}</mat-checkbox>
+        </div>
+      </mat-grid-tile>
+      @if (editUser) {
+        <mat-grid-tile>
+          <div class="checkbox-container">
+            <mat-checkbox (change)="changePassword.set(!changePassword())" color="primary">{{'userTracking.change-password' | transloco}}</mat-checkbox>
+          </div>
+        </mat-grid-tile>
+      }
+    </mat-grid-list>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button mat-dialog-close color="accent">{{'cancel' | transloco}}</button>
+  <button mat-raised-button color="primary" [disabled]="userForm.invalid" (click)="createUser()">{{'ok' | transloco}}</button>
+</mat-dialog-actions>

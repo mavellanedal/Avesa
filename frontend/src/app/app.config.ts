@@ -1,10 +1,10 @@
 import { ApplicationConfig, importProvidersFrom, isDevMode, LOCALE_ID, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
-import { provideTransloco, TRANSLOCO_MISSING_HANDLER } from '@jsverse/transloco';
+import { provideTransloco } from '@jsverse/transloco';
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { TranslocoHttpLoader } from './transloco-loader';
-import { TranslationValidationErrorService } from './core/services/translation-validation-error.service';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { httpActivityInterceptor } from '@core/interceptors/http-activity.interceptor';
@@ -68,6 +68,7 @@ export const CUSTOM_DATE_TIME_FORMAT = {
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: LOCALE_ID, useValue: 'es' },
+    provideAnimationsAsync(),
     provideZoneChangeDetection({ eventCoalescing: true}),
     provideRouter(routes),
     provideHttpClient(
@@ -96,7 +97,6 @@ export const appConfig: ApplicationConfig = {
       },
       loader: TranslocoHttpLoader,
     }),
-    { provide: TRANSLOCO_MISSING_HANDLER, useClass: TranslationValidationErrorService },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
     { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMAT },
     {

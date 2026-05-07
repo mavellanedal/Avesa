@@ -1,8 +1,7 @@
 export class ApiError {
-  status?: number;
-  errorCode?: string;
-  message?: string;
-  details?: string[] | any;
-  path?: string;
-  timestamp?: string;
+  public statusCode!: number;
+  public status!: number;
+  public errorCode!: string;
+  public message!: string;
+  public typeError!: number;
 }

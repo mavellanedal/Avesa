@@ -1,9 +1,18 @@
 {
-  "identificationNumber": "Número de identificación",
+  "user-tracking": "Gestión de usuarios",
+  "users": "Usuarios",
+  "id": "ID",
   "username": "Nombre de usuario",
+  "first-name": "Nombre",
+  "last-name": "Apellidos",
   "email": "Correo electrónico",
-  "name": "Nombre",
-  "surname": "Apellidos",
-  "createdDate": "Fecha de creación",
-  "add-user": "Agregar usuario"
+  "created-time": "Fecha de creación",
+  "add-user": "Añadir usuario",
+  "password": "Contraseña",
+  "confirm-password": "Confirmar contraseña",
+  "group": "Grupo",
+  "new-user": "Nuevo usuario",
+  "edit-user": "Editar usuario",
+  "change-password": "Cambiar contraseña",
+  "identification-number": "Número de identificación"
 }

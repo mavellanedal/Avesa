@@ -1,37 +1,22 @@
-@use 'colors' as *;
-
 .filter-form {
-  &.mat-mdc-card {
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-
-    mat-card-header {
-      padding: 20px 20px 0;
-    }
-
-    mat-card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: $primary;
-    }
-
-    mat-card-content {
-      padding: 16px 20px;
-
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-    }
-
-    mat-card-actions {
-      padding: 8px 16px 16px;
-      gap: 8px;
-
-      button {
-        min-width: 90px;
-      }
-    }
+  & mat-form-field {
+    margin-bottom: 5px;
   }
+
+  & mat-card-actions {
+    gap: 12px;
+  }
+}
+
+.mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background, .mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background {
+  border-color: #555 !important;
+}
+
+.mat-button-toggle-appearance-standard.mat-button-toggle-checked {
+  background-color: #0092BC !important;
+  color: #fff !important;
+}
+
+.mat-button-toggle-standalone.mat-button-toggle-appearance-standard .mat-pseudo-checkbox, .mat-button-toggle-group-appearance-standard .mat-pseudo-checkbox {
+  --mat-minimal-pseudo-checkbox-selected-checkmark-color: #fff !important;
 }

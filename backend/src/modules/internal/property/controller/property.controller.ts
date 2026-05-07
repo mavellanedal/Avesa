@@ -14,7 +14,7 @@ export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
 
   @Post('/getProperties')
-  @Roles(ROLES.PROPERIES_READ)
+  @Roles(ROLES.PROPERTIES_READ)
   @HttpCode(HttpStatus.OK)
   async getProperties(@Body() propertyFilter: PropertyFilterDto) {
     return await this.propertyService.getPropertiesByFilter(propertyFilter);

@@ -1,75 +1,89 @@
-@use 'colors' as *;
+.mat-mdc-row:nth-child(odd) {
+  background-color: #FFFFFF;
+}
 
-// Table wrapper
+.mat-mdc-row:nth-child(even) {
+  background-color: #F8F8F8;
+}
+
+.mdc-data-table__cell {
+  white-space: nowrap;
+}
+
+.mdc-data-table__cell, .mdc-data-table__header-cell {
+  padding: 0 5px !important;
+}
+
 .table-container {
-  width: 100%;
-  overflow-x: auto;
+  height: calc(100vh - 13.5rem);
+  max-width: 100%;
+  overflow: auto;
 }
 
-// Full-width table
-.mat-mdc-table {
-  width: 100%;
-  background: $surface;
-
-  .mat-mdc-header-cell {
-    font-weight: 600;
-    font-size: 0.8rem;
-    color: $shade;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    border-bottom: 1px solid $border;
-  }
-
-  .mat-mdc-cell {
-    color: $primary;
-    font-size: 0.875rem;
-    border-bottom: 1px solid $border;
-  }
-
-  .mat-mdc-row:last-child .mat-mdc-cell {
-    border-bottom: none;
-  }
-
-  .mat-mdc-row:hover .mat-mdc-cell {
-    background-color: rgba($secondary, 0.04);
-  }
-}
-
-// State indicator column
-.mat-column-state {
-  width: 8px;
-  min-width: 8px;
-  max-width: 8px;
-  padding: 0 !important;
-  overflow: visible;
-}
-
-.state-active {
-  display: block;
-  width: 4px;
-  height: 40px;
-  background-color: $success;
-  border-radius: 0 2px 2px 0;
-}
-
-.state-no-active {
-  display: block;
-  width: 4px;
-  height: 40px;
-  background-color: transparent;
-}
-
-// Empty state row
 .noData {
   text-align: center;
-  padding: 48px 16px;
-  color: $text-muted;
-  font-size: 0.875rem;
+  width: 100%;
+  color: indianred;
 }
 
-// Paginator
-.mat-mdc-paginator {
-  border-top: 1px solid $border;
-  font-size: 0.8rem;
-  color: $shade;
+.footPaginator {
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.bar-state {
+  border-radius: 12px;
+  height: 90%;
+  width: 5px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.items-number {
+  text-align: right;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+table.state {
+  tr td:first-child,
+  tr th:first-child {
+    padding: 0;
+    position: relative;
+    width: 20px;
+  }
+
+  tr td.state span {
+    @extend .bar-state;
+  }
+}
+
+
+.two-lines-ellipsis {
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  align-items: flex-start;
+  height: auto;
+  display: table-cell;
+  line-height: 1.35 !important;
+}
+
+.mat-mdc-header-cell {
+  line-height: 1.5 !important;
+}
+
+.mat-mdc-menu-item:not([disabled]):hover {
+  background-color: #0091 !important;
+  color: #0092bc !important;
+
+  .mat-icon-no-color {
+    color: #0092bc !important;
+  }
 }
