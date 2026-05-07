@@ -9,3 +9,5 @@ backend/.env.production
 avesa_pgdata
 
 .idea
+
+project.txt
