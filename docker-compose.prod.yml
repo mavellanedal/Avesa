@@ -1,17 +1,19 @@
 services:
   db:
     image: postgres:16-alpine
+    env_file:
+      - ./backend/.env.production
     environment:
-      POSTGRES_DB: ${DB_DATABASE}
-      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      - avesa_pgdata:/var/lib/postgresql/data
+      - avesa_pgdata_v2:/var/lib/postgresql/data
     networks: [avesa_net]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,19 +23,13 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
+    env_file:
+      - ./backend/.env.production
     environment:
       NODE_ENV: production
       PORT: 3000
       DB_HOST: db
       DB_PORT: 5432
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
-      CONSOLE_LOG: ${CONSOLE_LOG}
-      LD_DUPLICATE_WITHOUT_ORIGIN_INTERVAL: ${LD_DUPLICATE_WITHOUT_ORIGIN_INTERVAL}
-      LD_DUPLICATE_INTERVAL: ${LD_DUPLICATE_INTERVAL}
-      LD_DUPLICATE_RESEND_INTERVAL: ${LD_DUPLICATE_RESEND_INTERVAL}
     depends_on:
       db:
         condition: service_healthy
@@ -49,7 +45,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  avesa_pgdata:
+  avesa_pgdata_v2:
 
 networks:
   avesa_net:
