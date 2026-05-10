@@ -102,7 +102,7 @@ The frontend follows the guidance in `frontend/.claude/CLAUDE.md` (Angular/TypeS
 
 Copy `backend/.env.example` to `backend/.env.development` and fill in secrets. Key variables:
 ```
-DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 JWT_ACCESS_SECRET
 BACKEND_PORT=3000
 FRONTEND_PORT=4200

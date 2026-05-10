@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="48501151-296d-424c-909d-cbc195da3315" name="Changes" comment="" />
+    <list default="true" id="48501151-296d-424c-909d-cbc195da3315" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.prod.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,7 +20,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="c2900937-7ab8-48db-9259-a198172da2f8" />
+        <option name="activeSessionId" value="115a07fb-5288-479a-b873-d5563ebec49e" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -90,7 +94,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/mavellaneda/dev/avesa",
@@ -142,6 +146,7 @@
       <workItem from="1777989804236" duration="37595000" />
       <workItem from="1778250688718" duration="83000" />
       <workItem from="1778250790386" duration="16601000" />
+      <workItem from="1778429771218" duration="644000" />
     </task>
     <servers />
   </component>

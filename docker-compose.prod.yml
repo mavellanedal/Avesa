@@ -1,8 +1,6 @@
 services:
   db:
     image: postgres:16-alpine
-    env_file:
-      - ./backend/.env.production
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -23,13 +21,19 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
-    env_file:
-      - ./backend/.env.production
     environment:
       NODE_ENV: production
       PORT: 3000
       DB_HOST: db
       DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      CONSOLE_LOG: ${CONSOLE_LOG}
+      LD_DUPLICATE_WITHOUT_ORIGIN_INTERVAL: ${LD_DUPLICATE_WITHOUT_ORIGIN_INTERVAL}
+      LD_DUPLICATE_INTERVAL: ${LD_DUPLICATE_INTERVAL}
+      LD_DUPLICATE_RESEND_INTERVAL: ${LD_DUPLICATE_RESEND_INTERVAL}
     depends_on:
       db:
         condition: service_healthy
