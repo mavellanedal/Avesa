@@ -5,8 +5,6 @@ services:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5432:5432"
     volumes:
       - avesa_pgdata:/var/lib/postgresql/data
     networks: [avesa_net]
@@ -44,8 +42,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    ports:
-      - "80:80"
     depends_on: [backend]
     networks: [avesa_net]
     restart: unless-stopped
