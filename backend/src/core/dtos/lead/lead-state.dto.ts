@@ -1,12 +1,13 @@
-import { Expose } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
 
 export class LeadStateDto {
   @Expose()
-  @IsString()
-  name: string;
-
+  public id: number;
   @Expose()
-  @IsString()
-  description: string;
+  public name: string;
+  @Expose()
+  public description: string;
+  @Expose({ name: 'parent' })
+  @Type(() => LeadStateDto)
+  public parent: LeadStateDto;
 }

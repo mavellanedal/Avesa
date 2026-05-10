@@ -11,6 +11,12 @@ import leadConfig from '@modules/internal/lead/config/lead.config';
 import { ConfigType } from '@nestjs/config';
 import { LeadFilterDto } from '@dtos/lead/lead-filter.dto';
 import { LeadWelcomeFilterDto } from '@dtos/lead/lead-welcome-filter.dto';
+import { ResponseDataDto } from '@dtos/common/response-data.dto';
+import { plainToInstance } from 'class-transformer';
+import { LeadDto } from '@dtos/lead/lead.dto';
+import { LeadStateHistoryDto } from '@dtos/lead/lead-state-history.dto';
+import { LeadStateDto } from '@dtos/lead/lead-state.dto';
+import { LeadStateRepository } from '@modules/internal/lead/repositories/lead-state.repository';
 
 export interface IQuality {
   isQualified: boolean;
@@ -28,6 +34,7 @@ export class LeadService {
     private readonly blackListService: BlackListService,
     @Inject(leadConfig.KEY)
     private readonly configLead: ConfigType<typeof leadConfig>,
+    private readonly leadStateRepository: LeadStateRepository,
   ) {}
 
   public async createLead(
@@ -160,7 +167,29 @@ export class LeadService {
   }
 
   public async getLeads(leadFilter: LeadFilterDto) {
-    return await this.leadRepository.getLeads(leadFilter);
+    const [leads, total] =
+      await this.leadRepository.getLeadsByFilter(leadFilter);
+    return new ResponseDataDto(
+      plainToInstance(LeadDto, <Lead[]>leads, { strategy: 'excludeAll' }),
+      <number>total,
+    );
+  }
+
+  public async getLeadStateHistory(
+    idLead: string,
+  ): Promise<LeadStateHistoryDto[]> {
+    const leadStateHistories =
+      await this.leadStateHistoryRepository.getLeadStateHistory(idLead);
+    return plainToInstance(LeadStateHistoryDto, leadStateHistories, {
+      strategy: 'excludeAll',
+    });
+  }
+
+  public async getLeadStates(): Promise<LeadStateDto[]> {
+    const leadStates = await this.leadStateRepository.getLeadStates();
+    return plainToInstance(LeadStateDto, leadStates, {
+      strategy: 'excludeAll',
+    });
   }
 
   public async getLeadsWelcome(welcomeLeadFilter: LeadWelcomeFilterDto) {

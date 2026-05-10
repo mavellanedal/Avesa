@@ -6,4 +6,9 @@ export class ResponseDataDto<T> {
 
   @Expose()
   totalCount: number;
+
+  constructor(data: T, totalCount: number) {
+    this.data = data;
+    this.totalCount = totalCount;
+  }
 }

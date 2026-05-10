@@ -1,0 +1,20 @@
+{
+  "leads": "Leads",
+  "lead-tracking": "Seguimiento de Leads",
+  "lead-code": "Código de Lead",
+  "email": "Email",
+  "phone": "Teléfono",
+  "phone1": "Teléfono",
+  "surname": "Apellido",
+  "state": "Estado",
+  "sub-state": "Subestado",
+  "source": "Origen",
+  "inception-date": "Fecha de alta",
+  "simple-search": "Búsqueda simple",
+  "advanced-search": "Búsqueda avanzada",
+  "history-title": "Historial de estados",
+  "change-date": "Fecha de cambio",
+  "agent": "Agente",
+  "recirculate": "Recircular",
+  "more-info": "Más información"
+}

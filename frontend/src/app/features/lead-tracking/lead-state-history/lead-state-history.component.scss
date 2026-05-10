@@ -1,0 +1,25 @@
+mat-dialog-content {
+  min-width: 640px;
+  padding-top: 8px;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell,
+td.mat-cell {
+  padding: 0 12px;
+}
+
+.noData {
+  text-align: center;
+  padding: 24px 0;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

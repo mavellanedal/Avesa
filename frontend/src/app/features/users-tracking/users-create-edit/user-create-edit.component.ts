@@ -143,8 +143,8 @@ export default class UserCreateEditComponent {
         user.appUser.identificationNumber = this.userForm.get('identificationNumber')!.value;
       }
       if (this.editUser) {
-        firstValueFrom(this.userTrackingSvc.updateUser(user)).then(() => {
-          this.dialogRef.close(user);
+        firstValueFrom(this.userTrackingSvc.updateUser(user)).then((updatedUser) => {
+          this.dialogRef.close(updatedUser);
           Util.openMessageModal(this.matDialog, ModalConfig.TYPE_GREAT);
         });
       } else {

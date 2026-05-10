@@ -1,29 +1,19 @@
-import { Expose } from 'class-transformer';
-import {
-  IsOptional,
-  IsString,
-  IsNumber,
-  IsNotEmpty,
-  IsBoolean,
-} from 'class-validator';
+import { Expose, Transform } from 'class-transformer';
+import { IsString, IsNotEmpty, IsBoolean } from 'class-validator';
+import { Util } from '@shared/utilities/util';
 
 export class SourceDto {
   @Expose()
-  @IsNumber()
-  @IsOptional()
   public id: number;
-
   @Expose()
   @IsString()
   @IsNotEmpty()
   public name: string;
-
   @Expose()
   @IsString()
   public description: string;
-
   @Expose()
   @IsBoolean()
-  @IsOptional()
+  @Transform(({ value }) => Util.undefinedOrBooleanValue(value))
   public active: boolean;
 }

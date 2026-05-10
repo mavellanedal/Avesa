@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { AuthService } from '../../core/services/login/auth.service';
+import { AuthService } from '@services/login/auth.service';
 import { TranslocoPipe, provideTranslocoScope } from '@jsverse/transloco';
 import { UserToken } from '@models/security/user-token';
 import { MatMenuModule } from '@angular/material/menu';
@@ -41,6 +41,12 @@ export class HomeComponent implements OnInit {
       route: 'user-tracking',
       visible: this.authSvc.hasRole(ROLES.CONFIGURATION_READ)
     },
+    {
+      label: 'home.lead-tracking',
+      icon: 'phone_enabled',
+      route: 'lead-tracking',
+      visible: this.authSvc.hasRole(ROLES.LEADS_READ)
+    }
   ];
 
   ngOnInit() {
