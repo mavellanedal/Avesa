@@ -11,27 +11,26 @@ services:
     networks: [avesa_net]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: avesa_backend
     environment:
       NODE_ENV: production
+      PORT: ${BACKEND_PORT:-3000}
       DB_HOST: db
       DB_PORT: 5432
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-      BACKEND_PORT: ${BACKEND_PORT}
-      JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - "${BACKEND_PORT:-3000}:3000"
     depends_on:
       db:
         condition: service_healthy
@@ -41,12 +40,10 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        - NODE_ENV=production
+      dockerfile: Dockerfile.prod
     container_name: avesa_frontend
     ports:
-      - "${FRONTEND_PORT}:80"
+      - "${FRONTEND_PORT:-80}:80"
     depends_on: [backend]
     networks: [avesa_net]
     restart: unless-stopped
