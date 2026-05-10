@@ -41,39 +41,29 @@ export class LeadRepository extends CustomRepository<Lead> {
     return query.getOne();
   }
 
-  public async getLeads(leadFilter: LeadFilterDto) {
+  public async getLeadsByFilter(leadFilter: LeadFilterDto) {
     const qb = this.createQueryBuilder('lead');
     const query = qb
       .leftJoin(
         (subQuery) => {
           return subQuery
-            .select('MAX(lsh_max.id)', 'max_id')
-            .addSelect('lsh_max.lead.id', 'leadId')
+            .select('MAX(lsh_max.changeDate)', 'max_date')
+            .addSelect('lsh_max.lead_id', 'lead_id')
             .from(LeadStateHistory, 'lsh_max')
-            .groupBy('lsh_max.lead.id');
+            .groupBy('lsh_max.lead_id');
         },
         'latest_history',
-        'latest_history.leadId = lead.id',
+        'latest_history.lead_id = lead.id',
       )
       .leftJoinAndMapMany(
         'lead.leadStateHistories',
         LeadStateHistory,
         'lsh',
-        'lsh.id = latest_history.max_id',
+        'lsh.changeDate = latest_history.max_date AND lsh.lead_id = lead.id',
       )
-      .leftJoinAndMapOne('lsh.state', LeadState, 'ls', 'lsh.state.id = ls.id')
-      .leftJoinAndMapOne(
-        'lsh.subState',
-        LeadState,
-        'lss',
-        'lsh.subState.id = lss.id',
-      )
-      .leftJoinAndMapOne(
-        'lead.source',
-        Source,
-        'lsrc',
-        'lead.source.id = lsrc.id',
-      );
+      .leftJoinAndSelect('lsh.leadState', 'ls')
+      .leftJoinAndSelect('lsh.leadSubState', 'lss')
+      .leftJoinAndSelect('lead.source', 'lsrc');
 
     if (leadFilter.leadCode) {
       query.andWhere('lead.code = :leadCode', {
@@ -90,23 +80,29 @@ export class LeadRepository extends CustomRepository<Lead> {
     }
 
     if (leadFilter.name) {
-      query.andWhere('lead.name ILIKE :name', { name: `%${leadFilter.name}%` });
+      query.andWhere('lead.name LIKE :name', { name: `%${leadFilter.name}%` });
+    }
+
+    if (leadFilter.surname) {
+      query.andWhere('lead.surname LIKE :surname', {
+        surname: `%${leadFilter.surname}%`,
+      });
     }
 
     if (leadFilter.sourceId) {
-      query.andWhere('lead.source.id = :sourceId', {
+      query.andWhere('lsrc.id = :sourceId', {
         sourceId: leadFilter.sourceId,
       });
     }
 
     if (leadFilter.stateId) {
-      query.andWhere('lsh.leadState.id = :stateId', {
+      query.andWhere('ls.id = :stateId', {
         stateId: leadFilter.stateId,
       });
     }
 
     if (leadFilter.subStateId) {
-      query.andWhere('lsh.subState.id = :subStateId', {
+      query.andWhere('lss.id = :subStateId', {
         subStateId: leadFilter.subStateId,
       });
     }
@@ -125,7 +121,7 @@ export class LeadRepository extends CustomRepository<Lead> {
 
     query.take(leadFilter.maxResult);
     query.orderBy(
-      this.sortMap[leadFilter.sortBy] || 'lead.inceptionDate',
+      this.sortMap[leadFilter.sortBy] || 'lead.createdAt',
       leadFilter.orderBy || 'DESC',
     );
     return this.paginateResults(

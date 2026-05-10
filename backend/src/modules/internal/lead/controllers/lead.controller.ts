@@ -22,6 +22,20 @@ export class LeadController {
     return await this.leadService.getLeads(leadFilter);
   }
 
+  @Post('/getLeadStateHistory')
+  @Roles(ROLES.LEADS_READ)
+  @HttpCode(HttpStatus.OK)
+  async getLeadStateHistory(@Body() { leadId }) {
+    return await this.leadService.getLeadStateHistory(leadId);
+  }
+
+  @Post('/getLeadStates')
+  @Roles(ROLES.LEADS_READ)
+  @HttpCode(HttpStatus.OK)
+  async getLeadStates() {
+    return await this.leadService.getLeadStates();
+  }
+
   @Post('/getLeadsWelcome')
   @Roles(ROLES.LEADS_READ)
   @HttpCode(HttpStatus.OK)

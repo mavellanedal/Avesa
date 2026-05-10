@@ -13,7 +13,7 @@ import { UserUtil } from '@shared/utilities/userUtil';
 import { plainToInstance } from 'class-transformer';
 import { ResponseDataDto } from '@dtos/common/response-data.dto';
 import { Util } from '@shared/utilities/util';
-import { LoginUser } from 'src/core/entities';
+import { LoginUser } from '@entities';
 
 @Injectable()
 export class UsersService {
@@ -65,7 +65,8 @@ export class UsersService {
 
   public async updateUser(userDto: UserDto): Promise<UserDto> {
     return Util.transactional(async () => {
-      const updatedUser = await this.userRepository.updateUserTransaction(userDto);
+      const updatedUser =
+        await this.userRepository.updateUserTransaction(userDto);
       return plainToInstance(UserDto, updatedUser, { strategy: 'excludeAll' });
     }).catch((error) => {
       if (
@@ -75,14 +76,19 @@ export class UsersService {
       ) {
         throw error;
       }
-      this.logger.error('Se ha producido un error al actualizar el usuario', error);
+      this.logger.error(
+        'Se ha producido un error al actualizar el usuario',
+        error,
+      );
       throw new InternalServerErrorException(
         'Se ha producido un error al actualizar el usuario',
       );
     });
   }
 
-  public async findLoginUserByUsername(username: string): Promise<LoginUser | null> {
+  public async findLoginUserByUsername(
+    username: string,
+  ): Promise<LoginUser | null> {
     return this.userRepository.findLoginUserByUsername(username);
   }
 
@@ -93,14 +99,13 @@ export class UsersService {
 
   public async getUsersByFilter(
     userFilter: UserFilterDto,
-  ): Promise<ResponseDataDto<UserDto>> {
-    const [users, total] = await this.userRepository.getUsersByFilter(userFilter);
-    const result = new ResponseDataDto<UserDto>();
-    result.data = plainToInstance(UserDto, users, {
-      strategy: 'excludeAll',
-    }) as unknown as UserDto;
-    result.totalCount = total as number;
-    return result;
+  ): Promise<ResponseDataDto<UserDto[]>> {
+    const [users, total] =
+      await this.userRepository.getUsersByFilter(userFilter);
+    return new ResponseDataDto(
+      plainToInstance(UserDto, <LoginUser[]>users, { strategy: 'excludeAll' }),
+      <number>total,
+    );
   }
 
   public async getGroups() {

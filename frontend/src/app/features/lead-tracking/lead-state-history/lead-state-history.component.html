@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>
+  <mat-icon>history</mat-icon>
+  {{'leadTracking.history-title' | transloco}} — {{data.leadCode}}
+</h2>
+
+<mat-dialog-content>
+  <table mat-table [dataSource]="data.histories" class="w100">
+
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef>{{'leadTracking.change-date' | transloco}}</th>
+      <td mat-cell *matCellDef="let row">{{row.date | date: 'dd/MM/yyyy HH:mm'}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="state">
+      <th mat-header-cell *matHeaderCellDef>{{'leadTracking.state' | transloco}}</th>
+      <td mat-cell *matCellDef="let row">{{row.state?.name ?? '—'}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="subState">
+      <th mat-header-cell *matHeaderCellDef>{{'leadTracking.sub-state' | transloco}}</th>
+      <td mat-cell *matCellDef="let row">{{row.subState?.name ?? '—'}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="agent">
+      <th mat-header-cell *matHeaderCellDef>{{'leadTracking.agent' | transloco}}</th>
+      <td mat-cell *matCellDef="let row">
+        @if (row.appUser) {
+          {{row.appUser.name}} {{row.appUser.surname}}
+        } @else {
+          —
+        }
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell noData" [colSpan]="displayedColumns.length">{{'no-data' | transloco}}</td>
+    </tr>
+  </table>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" mat-dialog-close>{{'ok' | transloco}}</button>
+</mat-dialog-actions>

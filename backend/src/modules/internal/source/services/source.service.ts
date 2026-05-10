@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { SourceRepository } from '../repositories/source.repository';
+import { SourceDto } from '@dtos/source/source.dto';
+import { plainToInstance } from 'class-transformer';
+import { Source } from '@entities';
 
 @Injectable()
 export class SourceService {
@@ -11,5 +14,13 @@ export class SourceService {
 
   public async getSourceActiveByName(name: string): Promise<any> {
     return await this.sourceRepository.getSourceActiveByName(name);
+  }
+
+  public async getLightSources(): Promise<SourceDto[]> {
+    const sources = await this.sourceRepository.getLightSources();
+    return plainToInstance(SourceDto, sources, {
+      strategy: 'excludeAll',
+    });
+
   }
 }

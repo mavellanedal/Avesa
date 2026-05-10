@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { environment } from "@envs/environment.dev";
+import { environment } from "@envs/environment";
 import { UserFilter } from "@models/user-tracking/user-filter";
 import { User } from "@models/user-tracking/user";
 import {ResponseData} from '@models/response-data';

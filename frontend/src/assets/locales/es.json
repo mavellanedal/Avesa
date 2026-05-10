@@ -7,6 +7,7 @@
   "all": "Todos",
   "active": "Activo",
   "no-active": "Inactivo",
+  "name": "Nombre",
   "blackList": {
     "black-list": "Localizador de Usuarios",
     "title": "Usuarios"
@@ -21,5 +22,9 @@
   },
   "start": "Dashboard",
   "ok": "Aceptar",
-  "cancel": "Cancelar"
+  "cancel": "Cancelar",
+  "history": "Historial",
+  "start-date": "Fecha de inicio",
+  "end-date": "Fecha de fin",
+  "datetime-format": "dd/MM/yyyy HH:mm"
 }

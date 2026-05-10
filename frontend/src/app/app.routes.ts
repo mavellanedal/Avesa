@@ -28,6 +28,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/users-tracking/user-tracking.component'),
         canActivate: [rolesGuard],
         data: { role: ROLES.CONFIGURATION_READ }
+      },
+      {
+        path: 'lead-tracking',
+        loadComponent: () => import('./features/lead-tracking/lead-tracking.component'),
+        canActivate: [rolesGuard],
+        data: { role: ROLES.LEADS_READ }
       }
     ]
   },

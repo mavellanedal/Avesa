@@ -18,6 +18,7 @@ export class UserDto {
 
   @Expose()
   @IsString()
+  @IsOptional()
   username: string;
 
   @Expose()

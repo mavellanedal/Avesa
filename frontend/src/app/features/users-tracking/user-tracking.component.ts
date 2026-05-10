@@ -112,6 +112,10 @@ export default class UserTrackingComponent implements OnInit, AfterViewInit {
     this.paginator.page.pipe(takeUntilDestroyed(this.destroy)).subscribe(() => {
       this.getUsers();
     });
+    setTimeout(() => {
+      const ctrl = this.userFilterForm.get('enabled');
+      ctrl?.setValue(ctrl.value, { emitEvent: false });
+    });
   }
 
   private initUserForm() {

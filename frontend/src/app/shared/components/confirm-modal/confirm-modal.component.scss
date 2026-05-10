@@ -3,10 +3,10 @@ mat-dialog-title {
   text-align: center;
 }
 
-.confirm-icon {
-  width: 75px;
-  height: 75px;
-  font-size: 75px;
+::ng-deep .confirm-icon {
+  width: 75px !important;
+  height: 75px !important;
+  font-size: 75px !important;
   margin-top: 15px;
   margin-bottom: 25px;
 }

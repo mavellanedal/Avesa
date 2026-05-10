@@ -9,6 +9,7 @@ import { LeadStateHistoryRepository } from './repositories/lead-state-history.re
 import leadConfig from './config/lead.config';
 import { ExternalApiModule } from '@modules/external-api/external-api.module';
 import { BlackListModule } from '@modules/general/black-list/black-list.module';
+import { LeadStateRepository } from '@modules/internal/lead/repositories/lead-state.repository';
 
 @Module({
   imports: [
@@ -18,7 +19,12 @@ import { BlackListModule } from '@modules/general/black-list/black-list.module';
     ConfigModule.forFeature(leadConfig),
   ],
   controllers: [LeadController],
-  providers: [LeadService, LeadRepository, LeadStateHistoryRepository],
+  providers: [
+    LeadService,
+    LeadRepository,
+    LeadStateHistoryRepository,
+    LeadStateRepository,
+  ],
   exports: [LeadService, LeadRepository],
 })
 export class LeadModule {}

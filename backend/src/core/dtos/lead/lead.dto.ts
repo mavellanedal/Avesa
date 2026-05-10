@@ -1,38 +1,29 @@
-import { Expose, Type } from 'class-transformer';
-import { IsDate, IsEmail, IsPhoneNumber, IsString } from 'class-validator';
+import { Expose, Transform, Type } from 'class-transformer';
 import { SourceDto } from '../source/source.dto';
 import { LeadStateHistoryDto } from './lead-state-history.dto';
+import { BaseDto } from '@dtos/common/base.dto';
+import { Util } from '@shared/utilities/util';
 
 export class LeadDto {
   @Expose()
-  @IsString()
+  public id: number;
+  @Expose({ name: 'code' })
   public leadCode: string;
-
   @Expose()
-  @IsString()
   public name: string;
-
   @Expose()
-  @IsString()
   public surname: string;
-
   @Expose()
-  @IsEmail()
   public email: string;
-
   @Expose()
-  @IsPhoneNumber('ES')
   public phone: string;
-
   @Expose()
   @Type(() => SourceDto)
   public source: SourceDto;
-
-  @Expose()
+  @Expose({ name: 'leadStateHistories' })
   @Type(() => LeadStateHistoryDto)
   public leadStateHistory: LeadStateHistoryDto[];
-
-  @Expose()
-  @IsDate()
+  @Expose({ name: 'createdAt' })
+  @Transform(({ value }) => Util.parseDateValue(value))
   public date: Date;
 }

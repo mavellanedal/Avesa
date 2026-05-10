@@ -1,4 +1,4 @@
-<mat-form-field class="{{customClass()}}">
+<mat-form-field class="{{customClass()}}" >
   <mat-label>{{label() | transloco}}</mat-label>
   <input #dataAutocomplete type="text" placeholder="{{placeHolder() | transloco}}" matInput [formControl]="control()"
          [matAutocomplete]="autoData" (input)="filterData()" (focus)="filterData()">
