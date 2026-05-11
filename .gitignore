@@ -10,4 +10,5 @@ avesa_pgdata
 
 .idea
 
+.idea/**
 project.txt
