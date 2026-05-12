@@ -1,0 +1,160 @@
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary);
+  padding: 0 16px;
+}
+
+.login-card {
+  background-color: var(--color-surface);
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  width: 100%;
+  max-width: 25rem;
+}
+
+.login-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+
+  img { margin-bottom: 16px; }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ── Floating label field ──────────────────────────────────────────────────────
+
+.form-field-wrapper {
+  position: relative;
+}
+
+.login-input {
+  display: block;
+  padding: 16px 10px 10px;
+  width: 100%;
+  font-size: 0.875rem;
+  color: #111827;
+  background: transparent;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  appearance: none;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 150ms;
+
+  &:focus { border-color: var(--color-secondary); }
+
+  &.has-error {
+    border-color: var(--color-danger);
+    &:focus { border-color: var(--color-danger); }
+  }
+}
+
+.login-label {
+  display: inline-flex;
+  align-items: center;
+  position: absolute;
+  font-size: 0.875rem;
+  background-color: var(--color-surface);
+  transition: all 300ms;
+  transform: translateY(-1rem) scale(0.75);
+  top: 0.5rem;
+  z-index: 10;
+  transform-origin: left;
+  padding: 0 8px;
+  left: 4px;
+  color: #9CA3AF;
+  pointer-events: none;
+
+  &.label-error { color: var(--color-danger); }
+}
+
+// When empty: label moves to center
+.login-input:placeholder-shown ~ .login-label {
+  transform: translateY(-50%) scale(1);
+  top: 50%;
+}
+
+// When focused: label returns to top (overrides placeholder-shown)
+.login-input:focus ~ .login-label {
+  transform: translateY(-1rem) scale(0.75);
+  top: 0.5rem;
+  color: var(--color-primary);
+
+  &.label-error { color: var(--color-danger); }
+}
+
+.login-label-icon {
+  margin-right: 6px;
+}
+
+// ── Error & global messages ───────────────────────────────────────────────────
+
+.form-error-text {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--color-danger);
+
+  span { font-weight: 500; }
+}
+
+.global-error {
+  font-size: 0.875rem;
+  color: var(--color-danger);
+  text-align: center;
+}
+
+// ── Submit button ─────────────────────────────────────────────────────────────
+
+.login-btn {
+  width: 100%;
+  color: white;
+  background-color: var(--color-primary);
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  font-weight: 500;
+  line-height: 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 200ms, box-shadow 200ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover { background-color: var(--color-secondary); }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.5);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.login-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  color: #D1D5DB;
+  fill: var(--color-surface);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

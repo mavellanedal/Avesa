@@ -7,8 +7,8 @@ import { Util } from '@shared/utilities/util';
 export class LeadDto {
   @Expose()
   public id: number;
-  @Expose({ name: 'code' })
-  public leadCode: string;
+  @Expose()
+  public code: string;
   @Expose()
   public name: string;
   @Expose()
@@ -20,10 +20,10 @@ export class LeadDto {
   @Expose()
   @Type(() => SourceDto)
   public source: SourceDto;
-  @Expose({ name: 'leadStateHistories' })
+  @Expose()
   @Type(() => LeadStateHistoryDto)
-  public leadStateHistory: LeadStateHistoryDto[];
-  @Expose({ name: 'createdAt' })
+  public leadStateHistories: LeadStateHistoryDto[];
+  @Expose()
   @Transform(({ value }) => Util.parseDateValue(value))
-  public date: Date;
+  public createdAt: Date;
 }

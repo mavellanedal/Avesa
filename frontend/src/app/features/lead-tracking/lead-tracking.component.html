@@ -130,7 +130,7 @@
 
                   <ng-container matColumnDef="leadCode">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'leadTracking.lead-code' | transloco}}</th>
-                    <td mat-cell *matCellDef="let row">{{row.leadCode}}</td>
+                    <td mat-cell *matCellDef="let row">{{row.code}}</td>
                   </ng-container>
 
                   <ng-container matColumnDef="source">
@@ -164,17 +164,17 @@
 
                   <ng-container matColumnDef="date">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'leadTracking.inception-date' | transloco}}</th>
-                    <td mat-cell *matCellDef="let row">{{row.date | date: 'dd/MM/yyyy'}}</td>
+                    <td mat-cell *matCellDef="let row">{{row.createdAt | date: 'dd/MM/yyyy'}}</td>
                   </ng-container>
 
                   <ng-container matColumnDef="state">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'leadTracking.state' | transloco}}</th>
-                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.leadStateHistory?.[0]?.state?.name)}}</td>
+                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.leadStateHistories?.[0]?.leadState?.name)}}</td>
                   </ng-container>
 
                   <ng-container matColumnDef="subState">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'leadTracking.sub-state' | transloco}}</th>
-                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.leadStateHistory?.[0]?.subState?.name)}}</td>
+                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.leadStateHistories?.[0]?.leadSubState?.name)}}</td>
                   </ng-container>
 
                   <ng-container matColumnDef="actions">

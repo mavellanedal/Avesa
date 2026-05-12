@@ -9,15 +9,15 @@ import { BaseDto } from '@dtos/common/base.dto';
 export class LeadStateHistoryDto {
   @Expose()
   public id: number;
-  @Expose({ name: 'changeDate' })
+  @Expose()
   @Transform(({ value }) => Util.parseDateValue(value))
-  public date: Date;
-  @Expose({ name: 'leadState' })
+  public changeDate: Date;
+  @Expose()
   @Type(() => LeadStateDto)
-  public state: LeadStateDto;
-  @Expose({ name: 'leadSubState' })
+  public leadState: LeadStateDto;
+  @Expose()
   @Type(() => LeadStateDto)
-  public subState: LeadStateDto;
+  public leadSubState: LeadStateDto;
   @Expose()
   @Type(() => AppUserDto)
   public appUser: AppUserDto;

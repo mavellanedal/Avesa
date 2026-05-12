@@ -8,17 +8,17 @@
 
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef>{{'leadTracking.change-date' | transloco}}</th>
-      <td mat-cell *matCellDef="let row">{{row.date | date: 'dd/MM/yyyy HH:mm'}}</td>
+      <td mat-cell *matCellDef="let row">{{row.changeDate | date: 'dd/MM/yyyy HH:mm'}}</td>
     </ng-container>
 
     <ng-container matColumnDef="state">
       <th mat-header-cell *matHeaderCellDef>{{'leadTracking.state' | transloco}}</th>
-      <td mat-cell *matCellDef="let row">{{row.state?.name ?? '—'}}</td>
+      <td mat-cell *matCellDef="let row">{{row.leadState?.name ?? '—'}}</td>
     </ng-container>
 
     <ng-container matColumnDef="subState">
       <th mat-header-cell *matHeaderCellDef>{{'leadTracking.sub-state' | transloco}}</th>
-      <td mat-cell *matCellDef="let row">{{row.subState?.name ?? '—'}}</td>
+      <td mat-cell *matCellDef="let row">{{row.leadSubState?.name ?? '—'}}</td>
     </ng-container>
 
     <ng-container matColumnDef="agent">

@@ -7,7 +7,7 @@ export class LeadStateDto {
   public name: string;
   @Expose()
   public description: string;
-  @Expose({ name: 'parent' })
+  @Expose()
   @Type(() => LeadStateDto)
   public parent: LeadStateDto;
 }

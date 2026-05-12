@@ -70,6 +70,144 @@
   }
 }
 
+// ── Sidebar ──────────────────────────────────────────────────────────────────
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: all 300ms;
+  background-color: var(--color-primary);
+  color: white;
+
+  &--expanded { width: 256px; }
+  &--collapsed { width: 80px; }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  transition: all 300ms;
+
+  &--expanded {
+    flex-direction: row;
+    height: 64px;
+    padding: 0 24px;
+    justify-content: space-between;
+  }
+
+  &--collapsed {
+    flex-direction: column;
+    padding: 24px 0;
+    gap: 24px;
+    justify-content: center;
+  }
+}
+
+.sidebar-logo-full { height: 80px; }
+.sidebar-logo-icon { height: 40px; }
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #D1D5DB;
+  transition: color 150ms;
+  display: flex;
+  align-items: center;
+
+  &:hover { color: white; }
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  font-weight: 500;
+
+  &--padded {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  color: white;
+  font-size: 1.25rem;
+  border-left: 4px solid transparent;
+  text-decoration: none;
+  transition: all 150ms;
+
+  &--padded {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  &--centered { justify-content: center; }
+
+  &:hover {
+    background-color: var(--color-hover) !important;
+    background-image: none !important;
+    border-color: transparent !important;
+    color: white !important;
+  }
+
+  &--active {
+    background: linear-gradient(to right, #0A2342 0%, #12365A 10%);
+    color: var(--color-focus) !important;
+    border-color: var(--color-focus) !important;
+  }
+
+  &:hover .nav-icon {
+    transform: scale(1.1);
+  }
+}
+
+.nav-icon {
+  transition: transform 150ms;
+
+  &--spaced { margin-right: 12px; }
+}
+
+.nav-label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sidebar-footer {
+  padding: 16px;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 0;
+  color: #D1D5DB;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 150ms, background-color 150ms;
+  font-size: 1.25rem;
+  overflow: hidden;
+
+  &:hover { background-color: var(--color-hover) !important; }
+}
+
 .logout-icon {
-  color: #D82424
+  color: #D82424;
+
+  &--spaced { margin-right: 12px; }
+}
+
+.logout-label {
+  font-weight: 500;
 }

@@ -1,3 +1,18 @@
+:root {
+  --color-primary: #0a2342;
+  --color-secondary: #0284C7;
+  --color-hover: #12365A;
+  --color-shade: #6B7280;
+  --color-accent: #FBBF24;
+  --color-app-background: #F9FAFB;
+  --color-focus: #00E0FF;
+  --shadow-neon: 0 0 4px var(--color-accent);
+  --color-surface: #FFFFFF;
+  --color-danger: #EF4444;
+  --color-warning: #F97316;
+  --color-success: #10B981;
+}
+
 .mat-primary[disabled] {
   background-color: rgba(10, 35, 66, 0.27) !important;
 }

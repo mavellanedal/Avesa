@@ -2,55 +2,53 @@
 
   <!-- Sidebar -->
   <aside
-    [class.w-64]="!isCollapsed()"
-    [class.w-20]="isCollapsed()"
-    class="bg-primary text-white flex flex-col shrink-0 transition-all duration-300"
+    class="sidebar"
+    [class.sidebar--expanded]="!isCollapsed()"
+    [class.sidebar--collapsed]="isCollapsed()"
   >
     <div
-      class="flex items-center transition-all duration-300"
-      [class.flex-row]="!isCollapsed()" [class.h-16]="!isCollapsed()" [class.px-6]="!isCollapsed()" [class.justify-between]="!isCollapsed()"
-      [class.flex-col]="isCollapsed()" [class.py-6]="isCollapsed()" [class.gap-6]="isCollapsed()" [class.justify-center]="isCollapsed()"
+      class="sidebar-header"
+      [class.sidebar-header--expanded]="!isCollapsed()"
+      [class.sidebar-header--collapsed]="isCollapsed()"
     >
       @if (!isCollapsed()) {
-        <img src="assets/icons/LogotipoBlanco.webp" alt="Avesa Proptech" class="h-20">
+        <img src="assets/images/LogotipoBlanco.webp" alt="Avesa Proptech" class="sidebar-logo-full">
       } @else {
-        <img src="assets/icons/IsotipoBlanco.svg" alt="Avesa Proptech" class="h-10">
+        <img src="assets/images/IsotipoBlanco.svg" alt="Avesa Proptech" class="sidebar-logo-icon">
       }
 
-      <button (click)="toggleSidebar()" class="text-gray-300 hover:text-white transition-colors">
+      <button (click)="toggleSidebar()" class="sidebar-toggle">
         <mat-icon>{{ isCollapsed() ? 'left_panel_open' : 'left_panel_close' }}</mat-icon>
       </button>
     </div>
 
-    <nav class="flex-1 py-6 space-y-2 overflow-x-hidden overflow-y-hidden font-medium" [class.px-2]="!isCollapsed()">
+    <nav class="sidebar-nav" [class.sidebar-nav--padded]="!isCollapsed()">
       @for (item of menuItems; track item.label) {
         @if (item.visible) {
           <a
             [routerLink]="item.route"
-            routerLinkActive="bg-gradient-to-r from-[#0A2342] from-0% to-[#12365A] to-[10%] !text-focus !border-focus"
+            routerLinkActive="nav-item--active"
             [routerLinkActiveOptions]="{exact: true}"
-            class="flex items-center py-3 text-white text-xl border-l-4 border-transparent hover:bg-hover! hover:bg-none! hover:border-transparent! hover:text-white! transition-all group"
-            [class.px-4]="!isCollapsed()" [class.justify-center]="isCollapsed()"
+            class="nav-item"
+            [class.nav-item--padded]="!isCollapsed()"
+            [class.nav-item--centered]="isCollapsed()"
           >
-            <mat-icon class="group-hover:scale-110 transition-transform" [class.mr-3]="!isCollapsed()">
+            <mat-icon class="nav-icon" [class.nav-icon--spaced]="!isCollapsed()">
               {{ item.icon }}
             </mat-icon>
             @if (!isCollapsed()) {
-              <span class="font-medium whitespace-nowrap">{{ item.label | transloco }}</span>
+              <span class="nav-label">{{ item.label | transloco }}</span>
             }
           </a>
         }
       }
     </nav>
 
-    <div class="p-4">
-      <button
-        (click)="logout()"
-        class="flex items-center w-full py-3 text-gray-300 hover:bg-hover! rounded-lg transition-colors text-xl overflow-hidden group"
-      >
-        <mat-icon class="logout-icon" [class.mr-3]="!isCollapsed()">logout</mat-icon>
+    <div class="sidebar-footer">
+      <button (click)="logout()" class="logout-btn">
+        <mat-icon class="logout-icon" [class.logout-icon--spaced]="!isCollapsed()">logout</mat-icon>
         @if (!isCollapsed()) {
-          <span class="font-medium">{{ 'home.logout' | transloco }}</span>
+          <span class="logout-label">{{ 'home.logout' | transloco }}</span>
         }
       </button>
     </div>
