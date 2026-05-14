@@ -1,0 +1,223 @@
+<mat-tab-group class="mat-tabs-with-background mat-background-primary">
+  <mat-tab [disabled]="true" labelClass="unique-tab" [label]="'propertyTracking.property-tracking' | transloco">
+
+    <div class="main-inner">
+      <div class="main-detail">
+
+        <mat-card class="filter-form" appearance="outlined">
+          <mat-card-header class="mbottom20">
+            <mat-card-title>{{ 'propertyTracking.properties' | transloco }}</mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <form [formGroup]="propertyFilterForm" (ngSubmit)="searchFilterProperties()">
+
+              <avesa-autocomplete
+                [control]="propertyFilterForm.controls['propertyState']"
+                [data]="propertyStates"
+                [label]="'state'"
+                [customClass]="'w100'"
+              ></avesa-autocomplete>
+
+              <avesa-autocomplete
+                [control]="propertyFilterForm.controls['propertyType']"
+                [data]="propertyTypes"
+                [label]="'propertyTracking.property-type'"
+                [customClass]="'w100'"
+              ></avesa-autocomplete>
+
+              <avesa-autocomplete
+                [control]="propertyFilterForm.controls['city']"
+                [data]="cities"
+                [label]="'propertyTracking.city'"
+                [customClass]="'w100'"
+              ></avesa-autocomplete>
+
+
+              @if (showAdvanced()) {
+                <mat-form-field class="w100">
+                  <mat-label>{{'propertyTracking.surface-min' | transloco}}</mat-label>
+                  <input matInput numbersOnly formControlName="surfaceMin">
+                  @if (propertyFilterForm.get('surface-min')?.invalid) {
+                    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(propertyFilterForm.get('surface-min'))}}</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field class="w100">
+                  <mat-label>{{'propertyTracking.surface-max' | transloco}}</mat-label>
+                  <input matInput numbersOnly formControlName="surfaceMax">
+                  @if (propertyFilterForm.get('surface-max')?.invalid) {
+                    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(propertyFilterForm.get('surface-max'))}}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field class="w100">
+                  <mat-label>{{'propertyTracking.rooms' | transloco}}</mat-label>
+                  <input matInput numbersOnly formControlName="rooms">
+                  @if (propertyFilterForm.get('rooms')?.invalid) {
+                    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(propertyFilterForm.get('rooms'))}}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field class="w100 mbottom-5">
+                  <mat-label>{{'propertyTracking.bathrooms' | transloco}}</mat-label>
+                  <input matInput numbersOnly formControlName="bathrooms">
+                  @if (propertyFilterForm.get('bathrooms')?.invalid) {
+                    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(propertyFilterForm.get('bathrooms'))}}</mat-error>
+                  }
+                </mat-form-field>
+
+                <div class="w100 checkbox-field">
+                  <mat-checkbox formControlName="hasElevator">
+                    {{'propertyTracking.elevator' | transloco}}
+                  </mat-checkbox>
+                  @if (propertyFilterForm.get('elevator')?.invalid) {
+                    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(propertyFilterForm.get('elevator'))}}</mat-error>
+                  }
+                </div>
+
+                <div class="w100 checkbox-field">
+                  <mat-checkbox formControlName="hasPool">
+                    {{'propertyTracking.pool' | transloco}}
+                  </mat-checkbox>
+                  @if (propertyFilterForm.get('pool')?.invalid) {
+                    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(propertyFilterForm.get('pool'))}}</mat-error>
+                  }
+                </div>
+
+                <div class="w100 checkbox-field">
+                  <mat-checkbox formControlName="hasParking">
+                    {{'propertyTracking.parking' | transloco}}
+                  </mat-checkbox>
+                  @if (propertyFilterForm.get('parking')?.invalid) {
+                    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(propertyFilterForm.get('parking'))}}</mat-error>
+                  }
+                </div>
+
+                <div class="w100 checkbox-field">
+                  <mat-checkbox formControlName="isFurnished">
+                    {{'propertyTracking.furnished' | transloco}}
+                  </mat-checkbox>
+                  @if (propertyFilterForm.get('furnished')?.invalid) {
+                    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(propertyFilterForm.get('furnished'))}}</mat-error>
+                  }
+                </div>
+
+                <mat-form-field class="w100 mtop10">
+                  <mat-label>{{'propertyTracking.construction-year' | transloco}}</mat-label>
+                  <input matInput numbersOnly formControlName="constructionYear">
+                  @if (propertyFilterForm.get('construction-year')?.invalid) {
+                    <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(propertyFilterForm.get('construction-year'))}}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field class="w100">
+                  <mat-label>{{'num-result' | transloco}}</mat-label>
+                  <mat-select formControlName="maxResult">
+                    @for (size of maxResultSizes; track size) {
+                      <mat-option [value]="size">{{size}}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+
+              <div class="mt-4 text-end">
+                <button mat-button color="primary" (click)="toggleAdvancedFilter()">
+                  {{ showAdvanced() ? ('propertyTracking.simple-search' | transloco) : ('propertyTracking.advanced-search' | transloco) }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-raised-button color="accent" (click)="cleanPropertyFilter()">{{'clean' | transloco}}</button>
+            <button mat-raised-button color="primary" [disabled]="propertyFilterForm.invalid" (click)="searchFilterProperties()">{{'search' | transloco}}</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
+      <div class="main-data">
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <div class="mat-elevation-z1">
+              <div class="table-container">
+                <table [ngClass]="dataProperty.data.length ? '' : 'h100'" mat-table [dataSource]="dataProperty" matSort (matSortChange)="sortChanges($event)"
+                [matSortActive]="currentSort.active" [matSortDirection]="currentSort.direction" matSortStart="desc" [matSortDisableClear]="true">
+
+                  <ng-container matColumnDef="state">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'state' | transloco}}</th>
+                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.propertyStateHistories?.[0]?.propertyState?.name)}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="type">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'propertyTracking.property-type' | transloco}}</th>
+                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.type.name)}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="city">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'propertyTracking.city' | transloco}}</th>
+                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.address?.city)}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="surface">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'propertyTracking.surface' | transloco}}</th>
+                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.featuresSurface)}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="rooms">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'propertyTracking.rooms' | transloco}}</th>
+                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.featuresRooms)}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="bathrooms">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'propertyTracking.bathrooms' | transloco}}</th>
+                    <td mat-cell *matCellDef="let row">{{Util.dashOrValue(row.featuresBathrooms)}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="isFurnished">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'propertyTracking.furnished' | transloco}}</th>
+                    <td mat-cell *matCellDef="let row">
+                      @if (row.featureIsFurnished) {
+                        <mat-icon>
+                          check
+                        </mat-icon>
+                      } @else {
+                        <mat-icon>
+                          close_small
+                        </mat-icon>
+                      }
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell *matCellDef="let property" class="mw30px">
+                      <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="openPropertyStateHistory(property)">
+                          <mat-icon>history</mat-icon>
+                          <span>{{'history' | transloco}}</span>
+                        </button>
+                      </mat-menu>
+                    </td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                  <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell noData" [colSpan]="displayedColumns.length">
+                      {{'no-data' | transloco}}
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <mat-paginator [length]="resultsLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="true"></mat-paginator>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+  </mat-tab>
+</mat-tab-group>

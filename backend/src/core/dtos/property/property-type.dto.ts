@@ -1,7 +1,9 @@
 import { Expose } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class PropertyTypeDto {
+  @Expose()
+  @IsNumber()
   id: number;
 
   @Expose()

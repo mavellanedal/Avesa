@@ -63,7 +63,7 @@ function manageError(
       return throwError(() => err);
 
     case 401:
-      if (isRefreshingToken) {
+      if (isRefreshingToken || req.url.includes('/auth/login')) {
         svcs.errorMngtSvc.onNotify(apiError);
         return throwError(() => err);
       }
