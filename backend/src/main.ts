@@ -1,6 +1,11 @@
 import 'reflect-metadata';
 import 'winston-daily-rotate-file'; // 🚨 Descomentado para que funcione el DailyRotateFile
 import * as process from 'process';
+import * as dotenv from 'dotenv';
+
+dotenv.config({
+  path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env.development',
+});
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';

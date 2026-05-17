@@ -20,12 +20,14 @@
   overflow: auto;
 }
 
-.mdc-data-table__cell.noData {
-  text-align: center;
-  width: 100%;
-  color: indianred;
-}
+tr.mat-mdc-no-data-row {
+  height: 100%;
 
+  td.noData {
+    text-align: center;
+    vertical-align: middle;
+  }
+}
 .footPaginator {
   padding-left: 10px;
   display: flex;

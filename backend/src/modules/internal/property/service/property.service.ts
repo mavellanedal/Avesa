@@ -11,12 +11,22 @@ import {
   PropertyStateHistory,
   PropertyType,
   PaymentMethod,
+  Lead,
 } from '@entities';
 import { Util } from '@shared/utilities/util';
 import { PropertyOwnerRepository } from '../repository/property-owner.repository';
 import { PropertyStateHistoryRepository } from '../repository/property-state-history.repository';
 import { PROPERTY_SYSTEM } from '@shared/constants/property-system.constant';
 import { PropertyFilterDto } from '@dtos/property/property-filter.dto';
+import { ResponseDataDto } from '@dtos/common/response-data.dto';
+import { plainToInstance } from 'class-transformer';
+import { PropertyDto } from '@dtos/property/property.dto';
+import { PropertyStateHistoryDto } from '@dtos/property/property-state-history.dto';
+import { PropertyStateDto } from '@dtos/property/property-state.dto';
+import { PropertyStateRepository } from '@modules/internal/property/repository/property-state.repository';
+import { PropertyTypeRepository } from '@modules/internal/property/repository/property-type.repository';
+import { PropertyTypeDto } from '@dtos/property/property-type.dto';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class PropertyService {
@@ -26,6 +36,8 @@ export class PropertyService {
     private readonly propertyRepository: PropertyRepository,
     private readonly propertyOwnerRepository: PropertyOwnerRepository,
     private readonly propertyStateHistoryRepository: PropertyStateHistoryRepository,
+    private readonly propertyStateRepository: PropertyStateRepository,
+    private readonly propertyTypeRepository: PropertyTypeRepository,
   ) {}
 
   public async createProperty(
@@ -33,7 +45,9 @@ export class PropertyService {
     typeId: number,
   ): Promise<Property | null> {
     return Util.transactional(async () => {
+      const code = nanoid(PROPERTY_SYSTEM.NANOID_MAX_LENGTH);
       const date = new Date();
+      newProperty.propertyCode = code;
       newProperty.createdAt = date;
       newProperty.type = { id: typeId } as PropertyType;
 
@@ -86,8 +100,42 @@ export class PropertyService {
   }
 
   public async getPropertiesByFilter(propertyFilterDto: PropertyFilterDto) {
-    return await this.propertyRepository.getPropertiesByFilter(
-      propertyFilterDto,
+    const [properties, total] =
+      await this.propertyRepository.getPropertiesByFilter(propertyFilterDto);
+    return new ResponseDataDto(
+      plainToInstance(PropertyDto, <Property[]>properties, {
+        strategy: 'excludeAll',
+      }),
+      <number>total,
     );
+  }
+
+  public async getPropertyStateHistories(
+    propertyId: string,
+  ): Promise<PropertyStateHistoryDto[]> {
+    const propertyStateHistories =
+      await this.propertyStateHistoryRepository.getPropertyStateHistories(
+        propertyId,
+      );
+
+    return plainToInstance(PropertyStateHistoryDto, propertyStateHistories, {
+      strategy: 'excludeAll',
+    });
+  }
+
+  public async getPropertyStates(): Promise<PropertyStateDto[]> {
+    const propertyStates =
+      await this.propertyStateRepository.getPropertyStates();
+    return plainToInstance(PropertyStateDto, propertyStates, {
+      strategy: 'excludeAll',
+    });
+  }
+
+  public async getPropertyTypes(): Promise<PropertyTypeDto[]> {
+    const propertyTypes = await this.propertyTypeRepository.getPropertyTypes();
+
+    return plainToInstance(PropertyTypeDto, propertyTypes, {
+      strategy: 'excludeAll',
+    });
   }
 }

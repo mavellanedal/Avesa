@@ -1,6 +1,7 @@
 import { PaymentMethodDto } from '@dtos/common/payment-method.dto';
-import { Expose } from 'class-transformer';
-import { IsDate, IsString } from 'class-validator';
+import { Expose, Transform } from 'class-transformer';
+import { IsString } from 'class-validator';
+import { Util } from '@shared/utilities/util';
 
 export class PropertyOwnerDto {
   public id: string;
@@ -28,6 +29,6 @@ export class PropertyOwnerDto {
   public paymentMethod: PaymentMethodDto;
 
   @Expose()
-  @IsDate()
+  @Transform(({ value }) => Util.parseDateValue(value))
   public createdAt: Date;
 }

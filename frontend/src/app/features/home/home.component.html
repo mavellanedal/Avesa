@@ -60,11 +60,6 @@
 
       <!-- Header flotante top-right, sobre el tab-group de cada hijo -->
       <div class="header">
-        <button mat-icon-button color="accent" class="notification-btn" aria-label="Notificaciones">
-          <mat-icon>notifications</mat-icon>
-          <span class="notification-dot"></span>
-        </button>
-
         <button mat-button [matMenuTriggerFor]="userMenu" color="accent" class="user-btn">
           <mat-icon class="user-icon">account_circle</mat-icon>
           @if (user) {

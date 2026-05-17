@@ -26,5 +26,8 @@
   "history": "Historial",
   "start-date": "Fecha de inicio",
   "end-date": "Fecha de fin",
-  "datetime-format": "dd/MM/yyyy HH:mm"
+  "datetime-format": "dd/MM/yyyy HH:mm",
+  "yes": "Sí",
+  "num-result": "Número de resultados",
+  "select-one": "Selecciona una opción"
 }

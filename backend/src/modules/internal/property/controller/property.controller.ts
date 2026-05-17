@@ -19,4 +19,25 @@ export class PropertyController {
   async getProperties(@Body() propertyFilter: PropertyFilterDto) {
     return await this.propertyService.getPropertiesByFilter(propertyFilter);
   }
+
+  @Post('/getPropertyStateHistories')
+  @Roles(ROLES.PROPERTIES_READ)
+  @HttpCode(HttpStatus.OK)
+  async getPropertyStateHistories(@Body() { propertyId }) {
+    return await this.propertyService.getPropertyStateHistories(propertyId);
+  }
+
+  @Post('/getPropertyStates')
+  @Roles(ROLES.PROPERTIES_READ)
+  @HttpCode(HttpStatus.OK)
+  async getPropertyStates() {
+    return await this.propertyService.getPropertyStates();
+  }
+
+  @Post('/getPropertyTypes')
+  @Roles(ROLES.PROPERTIES_READ)
+  @HttpCode(HttpStatus.OK)
+  async getPropertyTypes() {
+    return await this.propertyService.getPropertyTypes();
+  }
 }

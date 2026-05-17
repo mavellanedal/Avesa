@@ -8,7 +8,7 @@ import {
   IsDate,
   ValidateNested,
 } from 'class-validator';
-import { Util } from 'src/shared/utilities/util';
+import { Util } from '@shared/utilities/util';
 import { BlackListTypeDto } from './black-list-type.dto';
 
 export class BlackListDto {

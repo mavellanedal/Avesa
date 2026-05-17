@@ -61,18 +61,6 @@ export class Util {
     return !(!control.value || /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(control.value)) ? { 'time': true } : null;
   }
 
-  /* static setTableResponseData(dataSource: any, data: ResponseData<any>, selection: SelectionModel<any> | null, firstPage: boolean,
-                              paginator: MatPaginator, table: MatTable<any>) {
-    dataSource.data = data.data;
-    selection?.clear();
-    if (firstPage) {
-      paginator.firstPage();
-    }
-    table.renderRows();
-    Util.resetTableScroll();
-    return data.totalCount;
-  } */
-
   static resetTableScroll() {
     document.querySelectorAll('.table-container').forEach(e => e.scrollTop = 0);
   }

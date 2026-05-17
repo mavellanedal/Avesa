@@ -46,6 +46,12 @@ export class HomeComponent implements OnInit {
       icon: 'phone_enabled',
       route: 'lead-tracking',
       visible: this.authSvc.hasRole(ROLES.LEADS_READ)
+    },
+    {
+      label: 'home.property-tracking',
+      icon: 'home_app_logo',
+      route: 'property-tracking',
+      visible: this.authSvc.hasRole(ROLES.PROPERTIES_READ)
     }
   ];
 

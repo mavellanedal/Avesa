@@ -8,4 +8,13 @@ export class PropertyStateHistoryRepository extends CustomRepository<PropertySta
   constructor(private readonly dataSource: DataSource) {
     super(PropertyStateHistory, dataSource.createEntityManager());
   }
+  
+  public getPropertyStateHistories(propertyId: string) {
+    return this.createQueryBuilder('psh')
+      .leftJoinAndSelect('psh.propertyState', 'pshState')
+      .leftJoinAndSelect('psh.appUser', 'pshUser')
+      .where('psh.property_id = :propertyId', { propertyId })
+      .orderBy('psh.changeDate', 'DESC')
+      .getMany();
+  }
 }

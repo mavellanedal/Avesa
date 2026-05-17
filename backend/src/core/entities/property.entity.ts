@@ -57,6 +57,9 @@ export class Property extends BaseUuidEntity {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
+  @Column({ type: 'varchar', nullable: true, name: 'property_code' })
+  propertyCode: string;
+
   @OneToOne(() => PropertyAddress, (address) => address.property)
   address: PropertyAddress;
 }

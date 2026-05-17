@@ -25,15 +25,19 @@ export const routes: Routes = [
       },
       {
         path: 'user-tracking',
-        loadComponent: () => import('./features/users-tracking/user-tracking.component'),
+        loadComponent: () => import('@features/users-tracking/user-tracking.component'),
         canActivate: [rolesGuard],
         data: { role: ROLES.CONFIGURATION_READ }
       },
       {
         path: 'lead-tracking',
-        loadComponent: () => import('./features/lead-tracking/lead-tracking.component'),
+        loadComponent: () => import('@features/lead-tracking/lead-tracking.component'),
         canActivate: [rolesGuard],
         data: { role: ROLES.LEADS_READ }
+      },
+      {
+        path: 'property-tracking',
+        loadComponent: () => import('@features/property-tracking/property-tracking.component'),
       }
     ]
   },

@@ -6,9 +6,6 @@ export class PropertyAddressDto {
   id: string;
 
   @Expose()
-  public property: PropertyDto;
-
-  @Expose()
   @IsString()
   public street: string;
 

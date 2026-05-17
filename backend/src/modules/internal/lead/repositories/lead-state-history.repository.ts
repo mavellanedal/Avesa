@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { Repository } from 'typeorm';
-import { AppUser, LeadState, LeadStateHistory } from '@entities';
+import { LeadStateHistory } from '@entities';
+import { CustomRepository } from '@shared/repositories/custom-repository';
 
 @Injectable()
-export class LeadStateHistoryRepository extends Repository<LeadStateHistory> {
+export class LeadStateHistoryRepository extends CustomRepository<LeadStateHistory> {
   constructor(private readonly dataSource: DataSource) {
     super(LeadStateHistory, dataSource.createEntityManager());
   }

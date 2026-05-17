@@ -119,7 +119,7 @@ export class LeadRepository extends CustomRepository<Lead> {
       });
     }
 
-    query.take(leadFilter.maxResult);
+    query.limit(leadFilter.maxResult);
     query.orderBy(
       this.sortMap[leadFilter.sortBy] || 'lead.createdAt',
       leadFilter.orderBy || 'DESC',

@@ -1,4 +1,7 @@
 {
+  "ts-node": {
+    "files": true,
+  },
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
@@ -12,7 +15,7 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -22,12 +25,12 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@shared/*": ["src/shared/*"],
-      "@modules/*": ["src/modules/*"],
-      "@config/*": ["src/config/*"],
-      "@dtos/*": ["src/core/dtos/*"],
-      "@entities": ["src/core/entities"],
-      "@entities/*": ["src/core/entities/*"]
+      "@shared/*": ["shared/*"],
+      "@modules/*": ["modules/*"],
+      "@config/*": ["config/*"],
+      "@dtos/*": ["core/dtos/*"],
+      "@entities": ["core/entities"],
+      "@entities/*": ["core/entities/*"]
     }
   }
 }

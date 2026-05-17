@@ -3,20 +3,19 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {DatePipe, NgClass} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
-import {provideTranslocoScope, TranslocoModule, TranslocoService} from '@jsverse/transloco';
+import {provideTranslocoScope, TranslocoModule } from '@jsverse/transloco';
 import {MatCardModule} from '@angular/material/card';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInput, MatInputModule} from '@angular/material/input';
+import {MatInputModule} from '@angular/material/input';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatOption} from '@angular/material/core';
 import {MatSelect, MatSelectModule} from '@angular/material/select';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatMenu, MatMenuItem, MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatSort, MatSortModule, Sort} from '@angular/material/sort';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTabsModule} from '@angular/material/tabs';
-import {AfterViewInit, Component, DestroyRef, inject, OnInit, signal, ViewChild} from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, ViewChild} from '@angular/core';
 import {Util} from '@shared/utility/util';
 import {TranslationValidationErrorService} from '@services/translation-validation-error.service';
 import {MatDialog} from '@angular/material/dialog';
@@ -36,6 +35,7 @@ import {LeadState} from '@models/lead/lead-state';
 import {MtxDatetimepickerModule} from '@ng-matero/extensions/datetimepicker';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {AvesaAutocompleteComponent} from '@shared/components/avesa-autocomplete/avesa-autocomplete.component';
+import {NumbersOnlyDirective} from '@core/directives/numbers-only.directive';
 
 @Component({
   selector: "app-lead-tracking",
@@ -46,7 +46,7 @@ import {AvesaAutocompleteComponent} from '@shared/components/avesa-autocomplete/
     MatGridListModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule,
     MatSelectModule, NgClass, MatCheckboxModule, MatDatepickerModule,
     MatTooltipModule, MatMenu, MatMenuItem, MatMenuTrigger, MatTabsModule,
-    AvesaAutocompleteComponent, MatSortModule
+    AvesaAutocompleteComponent, MatSortModule, NumbersOnlyDirective
   ],
   providers: [
     provideTranslocoScope("lead-tracking"),
@@ -69,7 +69,6 @@ export default class LeadTrackingComponent implements OnInit {
   public readonly transValidationErrorSvc = inject(TranslationValidationErrorService);
   public readonly authSvc = inject(AuthService);
   public readonly sourceTrackingSvc = inject(SourceTrackingService);
-  private readonly translocoSvc = inject(TranslocoService);
 
   public pageSizeOptions = Util.getPageSizeOptions();
   public pageSize = this.pageSizeOptions[0];
@@ -204,19 +203,19 @@ export default class LeadTrackingComponent implements OnInit {
   }
 
   public async openLeadStateHistoryModal(lead: Lead) {
-    const histories = await firstValueFrom(this.leadTrackingSvc.getLeadStateHistories(lead.id as unknown as string));
-    (document.activeElement as HTMLElement)?.blur();
-    this.matDialog.open(LeadStateHistoryComponent, {
+    const histories = await firstValueFrom(this.leadTrackingSvc.getLeadStateHistories(lead.id));
+    const ref = this.matDialog.open(LeadStateHistoryComponent, {
       width: '750px',
       maxHeight: '80vh',
-      data: { leadCode: lead.leadCode, histories },
+      data: { leadCode: lead.code, histories: histories },
     });
   }
 
   public getSources() {
     firstValueFrom(this.sourceTrackingSvc.getLightSources()).then(data => this.sources = data);
   }
-  public getLeadStates() {
+
+  private getLeadStates() {
     firstValueFrom(this.leadTrackingSvc.getLeadStates()).then(data => this.leadStates = data);
   }
 

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { AppUser, LoginUser, Group } from 'src/core/entities';
+import { AppUser, LoginUser, Group } from '@entities';
 import * as bcrypt from 'bcrypt';
 import { UserFilterDto } from '@dtos/user/user-filter.dto';
 import { UserDto } from '@dtos/user/user.dto';

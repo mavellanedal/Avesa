@@ -1,22 +1,20 @@
-import { Expose } from 'class-transformer';
-import { PropertyDto } from './property.dto';
+import { Expose, Transform, Type } from 'class-transformer';
 import { PropertyStateDto } from './property-state.dto';
 import { AppUserDto } from '../auth/app-user.dto';
-import { IsDate } from 'class-validator';
+import { Util } from '@shared/utilities/util';
 
 export class PropertyStateHistoryDto {
   public id: string;
 
   @Expose()
-  public property: PropertyDto;
-
-  @Expose()
+  @Type(() => PropertyStateDto)
   public propertyState: PropertyStateDto;
 
   @Expose()
+  @Type(() => AppUserDto)
   public appUser: AppUserDto;
 
   @Expose()
-  @IsDate()
+  @Transform(({ value }) => Util.parseDateValue(value))
   public changeDate: Date;
 }

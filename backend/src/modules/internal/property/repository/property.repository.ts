@@ -1,5 +1,6 @@
 import {
   Property,
+  PropertyAddress,
   PropertyOwner,
   PropertyState,
   PropertyStateHistory,
@@ -27,56 +28,117 @@ export class PropertyRepository extends CustomRepository<Property> {
       .innerJoin(
         (subQuery) => {
           return subQuery
-            .select('MAX(psh_max.id)', 'max_id')
-            .addSelect('psh_max.property.id', 'propertyId')
+            .select('MAX(psh_max.changeDate)', 'max_date')
+            .addSelect('psh_max.property_id', 'property_id')
             .from(PropertyStateHistory, 'psh_max')
-            .groupBy('psh_max.property.id');
+            .groupBy('psh_max.property_id');
         },
         'latest_history',
-        'latest_history.propertyId = p.id',
+        'latest_history.property_id = p.id',
       )
       .leftJoinAndMapMany(
         'p.propertyStateHistories',
         PropertyStateHistory,
         'psh',
-        'psh.id = latest_history.max_id',
+        'psh.changeDate = latest_history.max_date AND psh.property_id = p.id',
       )
-      .leftJoinAndMapOne(
-        'psh.state',
-        PropertyState,
-        'ps',
-        'psh.state.id = ps.id',
-      )
+      .leftJoinAndSelect('psh.propertyState', 'ps')
       .leftJoinAndMapOne('p.owner', PropertyOwner, 'po', 'po.id = p.owner.id')
-      .innerJoinAndMapOne('p.type', PropertyType, 'pt', 'p.type.id = pt.id');
+      .innerJoinAndMapOne('p.type', PropertyType, 'pt', 'p.type.id = pt.id')
+      .leftJoinAndMapOne(
+        'p.address',
+        PropertyAddress,
+        'pa',
+        'pa.property_id = p.id',
+      );
 
-    if (propertyFilter.state) {
-      query.andWhere('ps.id = :state', { active: propertyFilter.state });
+    if (propertyFilter.propertyCode) {
+      query.where('p.propertyCode LIKE :propertyCode', {
+        propertyCode: `%${propertyFilter.propertyCode}%`,
+      });
     }
 
-    if (propertyFilter.hasElevator) {
-      query.andWhere('p.hasEleveator = :hasElevator', {
+    if (propertyFilter.stateId) {
+      query.andWhere('ps.id = :state', { state: propertyFilter.stateId });
+    }
+
+    if (propertyFilter.typeId) {
+      query.andWhere('p.type.id = :type', { type: propertyFilter.typeId });
+    }
+
+    if (propertyFilter.city) {
+      query.andWhere('UPPER(LTRIM(RTRIM(pa.city))) LIKE :city', {
+        city: `%${propertyFilter.city.toUpperCase()}%`,
+      });
+    }
+
+    if (propertyFilter.startDate) {
+      query.andWhere('p.createdAt >= :startDate', {
+        startDate: propertyFilter.startDate,
+      });
+    }
+
+    if (propertyFilter.endDate) {
+      query.andWhere('p.createdAt <= :endDate', {
+        endDate: propertyFilter.endDate,
+      });
+    }
+
+    if (propertyFilter.surfaceMin) {
+      query.andWhere('p.featuresSurface >= :surfaceMin', {
+        surfaceMin: propertyFilter.surfaceMin,
+      });
+    }
+
+    if (propertyFilter.surfaceMax) {
+      query.andWhere('p.featuresSurface <= :surfaceMax', {
+        surfaceMax: propertyFilter.surfaceMax,
+      });
+    }
+
+    if (propertyFilter.rooms) {
+      query.andWhere('p.featuresRooms >= :rooms', {
+        rooms: propertyFilter.rooms,
+      });
+    }
+
+    if (propertyFilter.bathrooms) {
+      query.andWhere('p.featuresBathrooms >= :bathrooms', {
+        bathrooms: propertyFilter.bathrooms,
+      });
+    }
+
+    if (propertyFilter.hasElevator != null) {
+      query.andWhere('p.featuresHasElevator = :hasElevator', {
         hasElevator: propertyFilter.hasElevator,
       });
     }
 
-    if (propertyFilter.typeId) {
-      query.andWhere('p.type.id = :typeId', { typeId: propertyFilter.typeId });
-    }
-
-    if (propertyFilter.ownerName) {
-      query.andWhere('po.name = :ownerName', {
-        ownerName: propertyFilter.ownerName,
+    if (propertyFilter.hasPool != null) {
+      query.andWhere('p.featuresHasPool = :hasPool', {
+        hasPool: propertyFilter.hasPool,
       });
     }
 
-    if (propertyFilter.ownerNif) {
-      query.andWhere('po.nif = :ownerNif', {
-        ownerNif: propertyFilter.ownerNif,
+    if (propertyFilter.hasParking != null) {
+      query.andWhere('p.featuresHasParking = :hasParking', {
+        hasParking: propertyFilter.hasParking,
       });
     }
 
-    query.take(propertyFilter.maxResult);
+    if (propertyFilter.isFurnished != null) {
+      query.andWhere('p.featuresIsFurnished = :isFurnished', {
+        isFurnished: propertyFilter.isFurnished,
+      });
+    }
+
+    if (propertyFilter.constructionYear) {
+      query.andWhere('p.featuresConstructionYear = :constructionYear', {
+        constructionYear: propertyFilter.constructionYear,
+      });
+    }
+
+    query.limit(propertyFilter.maxResult);
     query.orderBy(
       this.sortMap[propertyFilter.sortBy] || 'p.createdAt',
       propertyFilter.orderBy || 'DESC',

@@ -47,7 +47,7 @@ export class CreatePropertyDto {
   @IsObject()
   @ValidateNested()
   @Type(() => CreatePropertyOwnerExternalDto)
-  @IsNotEmpty()
+  @IsOptional()
   public owner: CreatePropertyOwnerExternalDto;
 
   @ApiProperty({ example: 1 })

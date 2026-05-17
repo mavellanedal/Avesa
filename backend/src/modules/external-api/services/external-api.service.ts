@@ -1,19 +1,14 @@
-import { HttpStatus, Logger } from '@nestjs/common';
-import { Injectable } from '@nestjs/common';
-import { AuthService } from 'src/modules/auth/services/auth.service';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { CreateTokenDto } from '@dtos/external-api/create-token.dto';
 import { CreateTokenResponseDto } from '@dtos/external-api/create-token-response.dto';
 import { CreateLeadDto } from '@dtos/external-api/create-lead.dto';
 import { CreateLeadResponseDto } from '@dtos/external-api/create-lead-response.dto';
 import { ClsService } from 'nestjs-cls';
 import { SourceService } from '@modules/internal/source/services/source.service';
-import {
-  ExternalApiErrors,
-  ExternalApiException,
-} from '@modules/external-api/exceptions/externa-api.exception';
+import { ExternalApiErrors, ExternalApiException, } from '@modules/external-api/exceptions/externa-api.exception';
 import { plainToInstance } from 'class-transformer';
-import { Lead, Property, PropertyOwner } from '@entities';
-import { Source } from '@entities';
+import { Lead, Property, PropertyOwner, Source } from '@entities';
 import { LeadService } from '@modules/internal/lead/services/lead.service';
 import { QualityErrors } from '@modules/internal/lead/exceptions/lead.exceptions';
 import { CreatePropertyResponseDto } from '@dtos/external-api/create-property-response.dto';
@@ -122,9 +117,13 @@ export class ExternalApiService {
     createProperty: CreatePropertyDto,
   ): Promise<CreatePropertyResponseDto> {
     try {
-      const owner = plainToInstance(PropertyOwner, createProperty.owner);
       const newProperty = plainToInstance(Property, createProperty);
-      newProperty.owner = owner;
+      if (createProperty.owner) {
+        newProperty.owner = plainToInstance(
+          PropertyOwner,
+          createProperty.owner,
+        );
+      }
 
       const property = await this.propertyService.createProperty(
         newProperty,
@@ -133,11 +132,9 @@ export class ExternalApiService {
       if (!property)
         throw new ExternalApiException(ExternalApiErrors.INSERT_PROPERTY);
 
-      const response = new CreatePropertyResponseDto();
-      response.success = true;
-      response.message = 'Propiedad insertada con éxito';
-
-      return response;
+      return plainToInstance(CreatePropertyResponseDto, property, {
+        strategy: 'excludeAll',
+      });
     } catch (error) {
       this.logger.error(error);
       throw error instanceof ExternalApiException

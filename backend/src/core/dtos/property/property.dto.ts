@@ -1,6 +1,13 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { PropertyOwnerDto } from './property-owner.dto';
-import { IsBoolean, IsDate, IsNumber, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { PropertyTypeDto } from './property-type.dto';
 import { PropertyAddressDto } from './property-address.dto';
 import { Util } from '@shared/utilities/util';
@@ -12,6 +19,7 @@ export class PropertyDto {
 
   @Expose()
   @ValidateNested()
+  @IsOptional()
   @Type(() => PropertyOwnerDto)
   public owner: PropertyOwnerDto;
 
@@ -47,11 +55,11 @@ export class PropertyDto {
 
   @Expose()
   @IsBoolean()
-  public featureIsFurnished: boolean;
+  public featuresIsFurnished: boolean;
 
   @Expose()
   @IsNumber()
-  public featureConstructionYear: number;
+  public featuresConstructionYear: number;
 
   @Expose()
   @Type(() => PropertyStateHistoryDto)
@@ -60,4 +68,8 @@ export class PropertyDto {
   @Expose()
   @Transform(({ value }) => Util.parseDateValue(value))
   public createdAt: Date;
+
+  @Expose()
+  @IsString()
+  public propertyCode: string;
 }
