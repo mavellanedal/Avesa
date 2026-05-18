@@ -133,6 +133,22 @@ export class LeadRepository extends CustomRepository<Lead> {
     );
   }
 
+  public async getLeadsLastMonthByDay(): Promise<{ date: string; count: number }[]> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 29);
+    startDate.setHours(0, 0, 0, 0);
+
+    const rows = await this.createQueryBuilder('lead')
+      .select("TO_CHAR(DATE(lead.createdAt), 'YYYY-MM-DD')", 'date')
+      .addSelect('COUNT(*)', 'count')
+      .where('lead.createdAt >= :startDate', { startDate })
+      .groupBy('DATE(lead.createdAt)')
+      .orderBy('DATE(lead.createdAt)', 'ASC')
+      .getRawMany<{ date: string; count: string }>();
+
+    return rows.map((r) => ({ date: r.date, count: parseInt(r.count, 10) }));
+  }
+
   public async getLeadsWelcome(welcomeLeadFilter: LeadWelcomeFilterDto) {
     const newLeadsPromise = this.createQueryBuilder('lead')
       .where('lead.createdAt >= :startDate', {

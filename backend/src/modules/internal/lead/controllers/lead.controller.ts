@@ -7,6 +7,7 @@ import { Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { LeadService } from '@modules/internal/lead/services/lead.service';
 import { LeadWelcomeFilterDto } from '@dtos/lead/lead-welcome-filter.dto';
 import { LeadWelcomeMetricsDto } from '@dtos/lead/lead-welcome-metrics.dto';
+import { LeadChartPointDto } from '@dtos/lead/lead-chart-data.dto';
 
 @ApiExcludeController()
 @Controller('lead')
@@ -43,5 +44,12 @@ export class LeadController {
     @Body() welcomeLeadFilter: LeadWelcomeFilterDto,
   ): Promise<LeadWelcomeMetricsDto> {
     return await this.leadService.getLeadsWelcome(welcomeLeadFilter);
+  }
+
+  @Post('/getLeadsLastMonthByDay')
+  @Roles(ROLES.LEADS_READ)
+  @HttpCode(HttpStatus.OK)
+  async getLeadsLastMonthByDay(): Promise<LeadChartPointDto[]> {
+    return await this.leadService.getLeadsLastMonthByDay();
   }
 }

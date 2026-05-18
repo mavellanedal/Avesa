@@ -6,6 +6,7 @@ import {LeadState} from '@models/lead/lead-state';
 import {ResponseData} from '@models/response-data';
 import {Lead} from '@models/lead/lead';
 import {LeadStateHistory} from '@models/lead/lead-state-history';
+import {LeadChartPoint} from '@models/lead/lead-chart-data';
 
 @Injectable({
   providedIn: "root"
@@ -23,5 +24,9 @@ export class LeadTrackingService {
 
   getLeadStates() {
     return this.http.post<LeadState[]>(environment.api + '/lead/getLeadStates', undefined);
+  }
+
+  getLeadsLastMonthByDay() {
+    return this.http.post<LeadChartPoint[]>(environment.api + '/lead/getLeadsLastMonthByDay', {});
   }
 }

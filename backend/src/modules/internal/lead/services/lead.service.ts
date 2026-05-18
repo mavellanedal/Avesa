@@ -195,4 +195,8 @@ export class LeadService {
   public async getLeadsWelcome(welcomeLeadFilter: LeadWelcomeFilterDto) {
     return await this.leadRepository.getLeadsWelcome(welcomeLeadFilter);
   }
+
+  public async getLeadsLastMonthByDay() {
+    return this.leadRepository.getLeadsLastMonthByDay();
+  }
 }
