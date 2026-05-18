@@ -87,6 +87,21 @@
           }
         </mat-form-field>
       </mat-grid-tile>
+      @if (isShowUserSource()) {
+        <mat-grid-tile>
+          <mat-form-field>
+            <mat-label>{{'userTracking.source' | transloco}}</mat-label>
+            <mat-select #matSelectSource formControlName="userSource" [compareWith]="compareSource" matTooltip="{{matSelectSource.triggerValue}}">
+              @for (source of data.sources; track source.id) {
+                <mat-option [value]="source">{{source.name}}</mat-option>
+              }
+            </mat-select>
+            @if (userForm.get('userSource')?.invalid) {
+              <mat-error>{{transValidationErrorSvc.getValidationErrorMessage(userForm.get('userSource'))}}</mat-error>
+            }
+          </mat-form-field>
+        </mat-grid-tile>
+      }
     </mat-grid-list>
     <mat-grid-list cols="2" rowHeight="50">
       <mat-grid-tile>

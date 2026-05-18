@@ -10,6 +10,8 @@ import {
 } from 'class-validator';
 import { BaseDto } from '@dtos/common/base.dto';
 import { AppUserDto } from '../auth/app-user.dto';
+import { Source } from '@entities';
+import { SourceDto } from '@dtos/source/source.dto';
 
 export class UserDto {
   @Expose()
@@ -40,4 +42,9 @@ export class UserDto {
   @IsOptional()
   @Type(() => GroupDto)
   groups?: GroupDto[];
+
+  @Expose()
+  @IsOptional()
+  @Type(() => SourceDto)
+  public source: Source;
 }

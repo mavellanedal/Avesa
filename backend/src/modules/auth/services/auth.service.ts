@@ -44,7 +44,6 @@ export class AuthService {
         throw new UnauthorizedException('Usuario o contraseña incorrectos');
       }
 
-      // 2. Verificar la contraseña con bcrypt
       const isPasswordValid = await bcrypt.compare(
         createToken.password,
         loginUser.password,
@@ -52,6 +51,10 @@ export class AuthService {
 
       if (!isPasswordValid) {
         throw new UnauthorizedException('Usuario o contraseña incorrectos');
+      }
+
+      if (!loginUser.isActive) {
+        throw new UnauthorizedException('El usuario no esta activado');
       }
 
       // 3. Extraer los nombres de grupos y roles (quitando duplicados con Set)
@@ -177,8 +180,6 @@ export class AuthService {
       groups: groupsName,
       sourceId: loginUser.source?.id,
     };
-
-    // Para la API externa generaremos un token que expire en 1 hora, o según convención.
     const accessToken = await this.jwtService.signAsync(payload, {
       expiresIn: '1h',
     });

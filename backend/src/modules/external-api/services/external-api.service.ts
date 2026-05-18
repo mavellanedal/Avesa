@@ -1,4 +1,6 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { GROUPS } from '@shared/constants/groups.constant';
+import { JwtPayload } from '@modules/auth/services/auth.service';
 import { AuthService } from '@modules/auth/services/auth.service';
 import { CreateTokenDto } from '@dtos/external-api/create-token.dto';
 import { CreateTokenResponseDto } from '@dtos/external-api/create-token-response.dto';
@@ -60,6 +62,12 @@ export class ExternalApiService {
       };
     } catch (error) {
       this.logger.error('Error generando token externo', error);
+      if (error instanceof UnauthorizedException && error.message === 'No tiene permisos para API externa') {
+        throw new ExternalApiException(
+          ExternalApiErrors.NOT_ACCESS_RESOURCE,
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
       throw new ExternalApiException(
         ExternalApiErrors.USER_PASSWORD,
         HttpStatus.UNAUTHORIZED,
@@ -71,18 +79,23 @@ export class ExternalApiService {
     createLead: CreateLeadDto,
   ): Promise<CreateLeadResponseDto> {
     try {
-      const sourceId: number = this.clsService.get('userToken')?.sourceId;
+      const tokenPayload = this.clsService.get('userToken') as JwtPayload;
+      const sourceId: number = tokenPayload?.sourceId;
+      const isAdmin = (tokenPayload?.groups ?? []).includes(GROUPS.ADMINISTRATOR);
       let source: Source = null;
 
-      if (!sourceId) {
+      if (sourceId) {
+        source = await this.sourceService.getSourceActiveById(sourceId);
+        if (source && createLead.source && source.name !== createLead.source) {
+          throw new ExternalApiException(ExternalApiErrors.SOURCE_NOT_FOUND);
+        }
+      } else if (isAdmin) {
         if (!createLead.source) {
           throw new ExternalApiException(ExternalApiErrors.SOURCE_NOT_FOUND);
         }
-        source = await this.sourceService.getSourceActiveByName(
-          createLead.source,
-        );
+        source = await this.sourceService.getSourceActiveByName(createLead.source);
       } else {
-        source = await this.sourceService.getSourceActiveById(sourceId);
+        throw new ExternalApiException(ExternalApiErrors.SOURCE_NOT_FOUND);
       }
 
       if (!source) {

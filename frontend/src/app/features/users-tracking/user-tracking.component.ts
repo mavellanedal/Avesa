@@ -29,6 +29,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {UserFilter} from '@models/user-tracking/user-filter';
 import {firstValueFrom} from 'rxjs';
 import UserCreateEditComponent from '@features/users-tracking/users-create-edit/user-create-edit.component';
+import {SourceTrackingService} from '@services/source-tracking/source-tracking.service';
+import {Source} from '@models/source-tracking/source';
 
 @Component({
   selector: "app-user-tracking",
@@ -64,6 +66,7 @@ export default class UserTrackingComponent implements OnInit, AfterViewInit {
   protected readonly Util = Util;
 
   private readonly userTrackingSvc = inject(UserTrackingService);
+  private readonly sourceTrackingSvc = inject(SourceTrackingService);
   private readonly fb = inject(FormBuilder);
   public readonly transValidationErrorSvc = inject(TranslationValidationErrorService);
   private readonly matDialog = inject(MatDialog);
@@ -80,7 +83,7 @@ export default class UserTrackingComponent implements OnInit, AfterViewInit {
   public resultsLength = 0;
   public selection = new SelectionModel<User>(true, []);
   public groups: any[] = [];
-  // public sources: Source[] = [];
+  public sources: Source[] = [];
   public hasWriteRole = false;
   public dataUser: MatTableDataSource<User> = new MatTableDataSource<User>();
   public currentSort: Sort = { active: 'username', direction: 'desc' };
@@ -105,7 +108,7 @@ export default class UserTrackingComponent implements OnInit, AfterViewInit {
     this.initUserForm();
     this.getUsers(true);
     this.getGroups();
-    // this.getSources();
+    this.getSources();
   }
 
   ngAfterViewInit() {
@@ -209,7 +212,7 @@ export default class UserTrackingComponent implements OnInit, AfterViewInit {
     const ref = this.matDialog.open(UserCreateEditComponent, {
       height: '525px',
       width: '500px',
-      data: { user: user, groups: this.groups },
+      data: { user: user, groups: this.groups, sources: this.sources },
       autoFocus: false
     });
     firstValueFrom(ref.afterClosed()).then((user: User | undefined) => {
@@ -248,5 +251,11 @@ export default class UserTrackingComponent implements OnInit, AfterViewInit {
   public changeSort(sortState: Sort) {
     this.currentSort = sortState;
     this.getUsers(true);
+  }
+
+  private getSources() {
+    firstValueFrom(this.sourceTrackingSvc.getLightSources()).then((data) => {
+      this.sources = data;
+    });
   }
 }

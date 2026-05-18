@@ -19,6 +19,8 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {AppUser} from '@models/user-tracking/app-user';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GROUPS} from '@shared/constants/groups.constant';
 
 @Component({
   selector: 'app-user-create-edit',
@@ -83,20 +85,21 @@ export default class UserCreateEditComponent {
       password?.updateValueAndValidity();
       confirmPassword?.updateValueAndValidity();
     });
-    /*
+
     const userSource = this.userForm.get('userSource')!;
     this.userForm.get('userGroup')!.valueChanges.pipe(takeUntilDestroyed(this.destroy)).subscribe(value => {
-      if(value && value.includes(GROUPS.PROVIDER)) {
+
+      if(value && this.isUserGroup(GROUPS.PROVIDER)) {
         userSource.setValidators(Validators.required);
       } else {
         userSource.clearValidators();
       }
+
       if (!this.isShowUserSource()) {
         userSource.setValue(undefined);
       }
       userSource.updateValueAndValidity();
     });
-    })*/
     this.userForm.get('userGroup')?.updateValueAndValidity();
   }
 
@@ -111,6 +114,8 @@ export default class UserCreateEditComponent {
       password: [undefined, undefined],
       confirmPassword: [undefined, undefined],
       userGroup: [this.editUser?.groups || [], Validators.required],
+      userSource: [this.editUser?.source ? this.editUser.source : undefined,
+        this.isUserGroup(GROUPS.ADMINISTRATOR) ? undefined : Validators.required],
       enabled: [this.editUser?.isActive != null ? this.editUser.isActive : true]
     }, {
       validators: CustomValidators.matchPassword
@@ -128,9 +133,15 @@ export default class UserCreateEditComponent {
         if (this.userForm.get('userGroup')!.dirty) {
           user.groups = this.userForm.get('userGroup')!.value;
         }
+        if (this.userForm.get('userSource')!.value) {
+          user.source = this.userForm.get('userSource')!.value;
+        }
       } else {
         user.username = this.userForm.get('userName')!.value;
         user.groups = this.userForm.get('userGroup')!.value;
+        if (this.userForm.get('userSource')!.value && this.userForm.get('userSource')!.dirty) {
+          user.source = this.userForm.get('userSource')!.value;
+        }
       }
       if (this.userForm.get('password')!.value) {
         user.password = this.userForm.get('password')!.value;
@@ -169,5 +180,21 @@ export default class UserCreateEditComponent {
 
   public compareGroups(g1: any, g2: any): boolean {
     return g1 && g2 ? g1.id === g2.id : g1 === g2;
+  }
+
+  public compareSource(s1: any, s2: any): boolean {
+    return s1 && s2 ? +s1.id === +s2.id : s1 === s2;
+  }
+
+  public isUserGroup(group: GROUPS) {
+    const selectedGroups = this.userForm?.get('userGroup')?.value;
+    if (!selectedGroups || !Array.isArray(selectedGroups)) {
+      return false;
+    }
+    return selectedGroups.some((g: any) => g.id === group || g.name === group || g === group);
+  }
+
+  public isShowUserSource() {
+    return this.userForm.get('userGroup')?.value && (this.isUserGroup(GROUPS.ADMINISTRATOR) || this.isUserGroup(GROUPS.PROVIDER));
   }
 }

@@ -1,3 +1,4 @@
 export enum GROUPS {
-  ADMINISTRATOR = 'Administrator',
+  ADMINISTRATOR = 'ADMINISTRADOR',
+  PROVIDER = 'PROVEEDOR'
 }

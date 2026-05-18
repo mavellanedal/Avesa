@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { AppUser, LoginUser, Group } from '@entities';
+import { AppUser, LoginUser, Group, Source } from '@entities';
 import * as bcrypt from 'bcrypt';
 import { UserFilterDto } from '@dtos/user/user-filter.dto';
 import { UserDto } from '@dtos/user/user.dto';
@@ -54,6 +54,7 @@ export class UserRepository extends CustomRepository<AppUser> {
         isActive: userDto.isActive ?? true,
         appUser: savedAppUser,
         groups: (userDto.groups ?? []) as Group[],
+        source: userDto.source,
       });
 
       const savedLoginUser = await manager.save(newLoginUser);
@@ -100,6 +101,10 @@ export class UserRepository extends CustomRepository<AppUser> {
 
       if (userDto.groups !== undefined) {
         loginUser.groups = userDto.groups as Group[];
+      }
+
+      if (userDto.source !== undefined) {
+        loginUser.source = userDto.source as unknown as Source;
       }
 
       const updatedLoginUser = await manager.save(loginUser);

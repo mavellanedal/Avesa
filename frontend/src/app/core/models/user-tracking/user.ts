@@ -1,5 +1,6 @@
 import {AppUser} from '@models/user-tracking/app-user';
 import {Group} from '@models/user-tracking/group';
+import {Source} from '@models/source-tracking/source';
 
 export class User {
   public id?: string;
@@ -8,6 +9,5 @@ export class User {
   public isActive?: boolean;
   public appUser?: AppUser;
   public groups?: Group;
+  public source?: Source;
 }
-
-

@@ -58,7 +58,7 @@ export class LoginComponent {
 
             this.router.navigate(['/dashboard']);
           } else {
-            this.errorMessage.set('No se recibió un token válido.');
+            this.errorMessage.set('Usuario o contraseña incorrectos');
           }
         },
         error: (err) => {
